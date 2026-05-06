@@ -1,0 +1,1424 @@
+%% bare_jrnl_transmag.tex
+%% V1.4b
+%% 2015/08/26
+%% by Michael Shell
+%% see http://www.michaelshell.org/
+%% for current contact information.
+%%
+%% This is a skeleton file demonstrating the use of IEEEtran.cls
+%% (requires IEEEtran.cls version 1.8b or later) with an IEEE 
+%% Transactions on Magnetics journal paper.
+%%
+%% Support sites:
+%% http://www.michaelshell.org/tex/ieeetran/
+%% http://www.ctan.org/pkg/ieeetran
+%% and
+%% http://www.ieee.org/
+
+%%*************************************************************************
+%% Legal Notice:
+%% This code is offered as-is without any warranty either expressed or
+%% implied; without even the implied warranty of MERCHANTABILITY or
+%% FITNESS FOR A PARTICULAR PURPOSE! 
+%% User assumes all risk.
+%% In no event shall the IEEE or any contributor to this code be liable for
+%% any damages or losses, including, but not limited to, incidental,
+%% consequential, or any other damages, resulting from the use or misuse
+%% of any information contained here.
+%%
+%% All comments are the opinions of their respective authors and are not
+%% necessarily endorsed by the IEEE.
+%%
+%% This work is distributed under the LaTeX Project Public License (LPPL)
+%% ( http://www.latex-project.org/ ) version 1.3, and may be freely used,
+%% distributed and modified. A copy of the LPPL, version 1.3, is included
+%% in the base LaTeX documentation of all distributions of LaTeX released
+%% 2003/12/01 or later.
+%% Retain all contribution notices and credits.
+%% ** Modified files should be clearly indicated as such, including  **
+%% ** renaming them and changing author support contact information. **
+%%*************************************************************************
+
+
+% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
+% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
+% *** with production work. The IEEE's font choices and paper sizes can   ***
+% *** trigger bugs that do not appear when using other class files.       ***                          ***
+% The testflow support page is at:
+% http://www.michaelshell.org/tex/testflow/
+
+
+
+\documentclass[journal,transmag]{IEEEtran}
+%
+% If IEEEtran.cls has not been installed into the LaTeX system files,
+% manually specify the path to it like:
+% \documentclass[journal]{../sty/IEEEtran}
+
+
+
+
+% Some very useful LaTeX packages include:
+% (uncomment the ones you want to load)
+
+
+% *** MISC UTILITY PACKAGES ***
+%
+%\usepackage{ifpdf}
+% Heiko Oberdiek's ifpdf.sty is very useful if you need conditional
+% compilation based on whether the output is pdf or dvi.
+% usage:
+% \ifpdf
+%   % pdf code
+% \else
+%   % dvi code
+% \fi
+% The latest version of ifpdf.sty can be obtained from:
+% http://www.ctan.org/pkg/ifpdf
+% Also, note that IEEEtran.cls V1.7 and later provides a builtin
+% \ifCLASSINFOpdf conditional that works the same way.
+% When switching from latex to pdflatex and vice-versa, the compiler may
+% have to be run twice to clear warning/error messages.
+
+
+
+
+
+
+% *** CITATION PACKAGES ***
+%
+%\usepackage{cite}
+% cite.sty was written by Donald Arseneau
+% V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
+% \cite{} output to follow that of the IEEE. Loading the cite package will
+% result in citation numbers being automatically sorted and properly
+% "compressed/ranged". e.g., [1], [9], [2], [7], [5], [6] without using
+% cite.sty will become [1], [2], [5]--[7], [9] using cite.sty. cite.sty's
+% \cite will automatically add leading space, if needed. Use cite.sty's
+% noadjust option (cite.sty V3.8 and later) if you want to turn this off
+% such as if a citation ever needs to be enclosed in parenthesis.
+% cite.sty is already installed on most LaTeX systems. Be sure and use
+% version 5.0 (2009-03-20) and later if using hyperref.sty.
+% The latest version can be obtained at:
+% http://www.ctan.org/pkg/cite
+% The documentation is contained in the cite.sty file itself.
+\usepackage{cite}
+\usepackage[colorlinks=true, allcolors=blue, pagebackref=true]{hyperref}
+
+
+
+
+% *** GRAPHICS RELATED PACKAGES ***
+%
+\ifCLASSINFOpdf
+  % \usepackage[pdftex]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../pdf/}{../jpeg/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\else
+  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+  % will default to the driver specified in the system graphics.cfg if no
+  % driver is specified.
+  % \usepackage[dvips]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../eps/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.eps}
+\fi
+% graphicx was written by David Carlisle and Sebastian Rahtz. It is
+% required if you want graphics, photos, etc. graphicx.sty is already
+% installed on most LaTeX systems. The latest version and documentation
+% can be obtained at: 
+% http://www.ctan.org/pkg/graphicx
+% Another good source of documentation is "Using Imported Graphics in
+% LaTeX2e" by Keith Reckdahl which can be found at:
+% http://www.ctan.org/pkg/epslatex
+%
+% latex, and pdflatex in dvi mode, support graphics in encapsulated
+% postscript (.eps) format. pdflatex in pdf mode supports graphics
+% in .pdf, .jpeg, .png and .mps (metapost) formats. Users should ensure
+% that all non-photo figures use a vector format (.eps, .pdf, .mps) and
+% not a bitmapped formats (.jpeg, .png). The IEEE frowns on bitmapped formats
+% which can result in "jaggedy"/blurry rendering of lines and letters as
+% well as large increases in file sizes.
+%
+% You can find documentation about the pdfTeX application at:
+% http://www.tug.org/applications/pdftex
+
+
+\usepackage{graphicx}
+
+% *** MATH PACKAGES ***
+%
+%\usepackage{amsmath}
+% A popular package from the American Mathematical Society that provides
+% many useful and powerful commands for dealing with mathematics.
+%
+% Note that the amsmath package sets \interdisplaylinepenalty to 10000
+% thus preventing page breaks from occurring within multiline equations. Use:
+%\interdisplaylinepenalty=2500
+% after loading amsmath to restore such page breaks as IEEEtran.cls normally
+% does. amsmath.sty is already installed on most LaTeX systems. The latest
+% version and documentation can be obtained at:
+% http://www.ctan.org/pkg/amsmath
+
+
+
+
+
+% *** SPECIALIZED LIST PACKAGES ***
+%
+%\usepackage{algorithmic}
+% algorithmic.sty was written by Peter Williams and Rogerio Brito.
+% This package provides an algorithmic environment fo describing algorithms.
+% You can use the algorithmic environment in-text or within a figure
+% environment to provide for a floating algorithm. Do NOT use the algorithm
+% floating environment provided by algorithm.sty (by the same authors) or
+% algorithm2e.sty (by Christophe Fiorio) as the IEEE does not use dedicated
+% algorithm float types and packages that provide these will not provide
+% correct IEEE style captions. The latest version and documentation of
+% algorithmic.sty can be obtained at:
+% http://www.ctan.org/pkg/algorithms
+% Also of interest may be the (relatively newer and more customizable)
+% algorithmicx.sty package by Szasz Janos:
+% http://www.ctan.org/pkg/algorithmicx
+
+
+
+
+% *** ALIGNMENT PACKAGES ***
+%
+%\usepackage{array}
+% Frank Mittelbach's and David Carlisle's array.sty patches and improves
+% the standard LaTeX2e array and tabular environments to provide better
+% appearance and additional user controls. As the default LaTeX2e table
+% generation code is lacking to the point of almost being broken with
+% respect to the quality of the end results, all users are strongly
+% advised to use an enhanced (at the very least that provided by array.sty)
+% set of table tools. array.sty is already installed on most systems. The
+% latest version and documentation can be obtained at:
+% http://www.ctan.org/pkg/array
+
+
+% IEEEtran contains the IEEEeqnarray family of commands that can be used to
+% generate multiline equations as well as matrices, tables, etc., of high
+% quality.
+
+
+
+
+% *** SUBFIGURE PACKAGES ***
+%\ifCLASSOPTIONcompsoc
+%  \usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
+%\else
+%  \usepackage[caption=false,font=footnotesize]{subfig}
+%\fi
+% subfig.sty, written by Steven Douglas Cochran, is the modern replacement
+% for subfigure.sty, the latter of which is no longer maintained and is
+% incompatible with some LaTeX packages including fixltx2e. However,
+% subfig.sty requires and automatically loads Axel Sommerfeldt's caption.sty
+% which will override IEEEtran.cls' handling of captions and this will result
+% in non-IEEE style figure/table captions. To prevent this problem, be sure
+% and invoke subfig.sty's "caption=false" package option (available since
+% subfig.sty version 1.3, 2005/06/28) as this is will preserve IEEEtran.cls
+% handling of captions.
+% Note that the Computer Society format requires a larger sans serif font
+% than the serif footnote size font used in traditional IEEE formatting
+% and thus the need to invoke different subfig.sty package options depending
+% on whether compsoc mode has been enabled.
+%
+% The latest version and documentation of subfig.sty can be obtained at:
+% http://www.ctan.org/pkg/subfig
+
+
+
+% *** FLOAT PACKAGES ***
+%
+%\usepackage{fixltx2e}
+% fixltx2e, the successor to the earlier fix2col.sty, was written by
+% Frank Mittelbach and David Carlisle. This package corrects a few problems
+% in the LaTeX2e kernel, the most notable of which is that in current
+% LaTeX2e releases, the ordering of single and double column floats is not
+% guaranteed to be preserved. Thus, an unpatched LaTeX2e can allow a
+% single column figure to be placed prior to an earlier double column
+% figure.
+% Be aware that LaTeX2e kernels dated 2015 and later have fixltx2e.sty's
+% corrections already built into the system in which case a warning will
+% be issued if an attempt is made to load fixltx2e.sty as it is no longer
+% needed.
+% The latest version and documentation can be found at:
+% http://www.ctan.org/pkg/fixltx2e
+
+
+%\usepackage{stfloats}
+% stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
+% the ability to do double column floats at the bottom of the page as well
+% as the top. (e.g., "\begin{figure*}[!b]" is not normally possible in
+% LaTeX2e). It also provides a command:
+%\fnbelowfloat
+% to enable the placement of footnotes below bottom floats (the standard
+% LaTeX2e kernel puts them above bottom floats). This is an invasive package
+% which rewrites many portions of the LaTeX2e float routines. It may not work
+% with other packages that modify the LaTeX2e float routines. The latest
+% version and documentation can be obtained at:
+% http://www.ctan.org/pkg/stfloats
+% Do not use the stfloats baselinefloat ability as the IEEE does not allow
+% \baselineskip to stretch. Authors submitting work to the IEEE should note
+% that the IEEE rarely uses double column equations and that authors should try
+% to avoid such use. Do not be tempted to use the cuted.sty or midfloat.sty
+% packages (also by Sigitas Tolusis) as the IEEE does not format its papers in
+% such ways.
+% Do not attempt to use stfloats with fixltx2e as they are incompatible.
+% Instead, use Morten Hogholm'a dblfloatfix which combines the features
+% of both fixltx2e and stfloats:
+%
+% \usepackage{dblfloatfix}
+% The latest version can be found at:
+% http://www.ctan.org/pkg/dblfloatfix
+
+
+
+
+%\ifCLASSOPTIONcaptionsoff
+%  \usepackage[nomarkers]{endfloat}
+% \let\MYoriglatexcaption\caption
+% \renewcommand{\caption}[2][\relax]{\MYoriglatexcaption[#2]{#2}}
+%\fi
+% endfloat.sty was written by James Darrell McCauley, Jeff Goldberg and 
+% Axel Sommerfeldt. This package may be useful when used in conjunction with 
+% IEEEtran.cls'  captionsoff option. Some IEEE journals/societies require that
+% submissions have lists of figures/tables at the end of the paper and that
+% figures/tables without any captions are placed on a page by themselves at
+% the end of the document. If needed, the draftcls IEEEtran class option or
+% \CLASSINPUTbaselinestretch interface can be used to increase the line
+% spacing as well. Be sure and use the nomarkers option of endfloat to
+% prevent endfloat from "marking" where the figures would have been placed
+% in the text. The two hack lines of code above are a slight modification of
+% that suggested by in the endfloat docs (section 8.4.1) to ensure that
+% the full captions always appear in the list of figures/tables - even if
+% the user used the short optional argument of \caption[]{}.
+% IEEE papers do not typically make use of \caption[]'s optional argument,
+% so this should not be an issue. A similar trick can be used to disable
+% captions of packages such as subfig.sty that lack options to turn off
+% the subcaptions:
+% For subfig.sty:
+% \let\MYorigsubfloat\subfloat
+% \renewcommand{\subfloat}[2][\relax]{\MYorigsubfloat[]{#2}}
+% However, the above trick will not work if both optional arguments of
+% the \subfloat command are used. Furthermore, there needs to be a
+% description of each subfigure *somewhere* and endfloat does not add
+% subfigure captions to its list of figures. Thus, the best approach is to
+% avoid the use of subfigure captions (many IEEE journals avoid them anyway)
+% and instead reference/explain all the subfigures within the main caption.
+% The latest version of endfloat.sty and its documentation can obtained at:
+% http://www.ctan.org/pkg/endfloat
+%
+% The IEEEtran \ifCLASSOPTIONcaptionsoff conditional can also be used
+% later in the document, say, to conditionally put the References on a 
+% page by themselves.
+
+
+
+
+% *** PDF, URL AND HYPERLINK PACKAGES ***
+%
+%\usepackage{url}
+% url.sty was written by Donald Arseneau. It provides better support for
+% handling and breaking URLs. url.sty is already installed on most LaTeX
+% systems. The latest version and documentation can be obtained at:
+% http://www.ctan.org/pkg/url
+% Basically, \url{my_url_here}.
+
+
+
+
+% *** Do not adjust lengths that control margins, column widths, etc. ***
+% *** Do not use packages that alter fonts (such as pslatex).         ***
+% There should be no need to do such things with IEEEtran.cls V1.6 and later.
+% (Unless specifically asked to do so by the journal or conference you plan
+% to submit to, of course. )
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\begin{document}
+%
+% paper title
+% Titles are generally capitalized except for words such as a, an, and, as,
+% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
+% not capitalized unless they are the first or last word of the title.
+% Linebreaks \\ can be used within to get better formatting as desired.
+% Do not put math or special symbols in the title.
+\title{A Unified Multimodal Framework for Mushroom Classification}
+
+% author names and affiliations
+% transmag papers use the long conference author name format.
+
+\author{\IEEEauthorblockN{Victor Hugo Figueroa\IEEEauthorrefmark{1},
+Herman Klausen Skoglund\IEEEauthorrefmark{2},and 
+Chonthichar Soythong\IEEEauthorrefmark{3}~\IEEEmembership{}}
+\IEEEauthorblockA{\IEEEauthorrefmark{1}Oslo Metropolitan University}
+
+\thanks{}}
+
+
+
+% The paper headers
+% \markboth{Journal of \LaTeX\ Class Files,~Vol.~14, No.~8, August~2015}%
+% {Shell \MakeLowercase{\textit{et al.}}: Multimodal Mushroom Classification}
+% The only time the second header will appear is for the odd numbered pages
+% after the title page when using the twoside option.
+% 
+% *** Note that you probably will NOT want to include the author's ***
+% *** name in the headers of peer review papers.                   ***
+% You can use \ifCLASSOPTIONpeerreview for conditional compilation here if
+% you desire.
+
+
+
+
+% If you want to put a publisher's ID mark on the page you can do it like
+% this:
+%\IEEEpubid{0000--0000/00\$00.00~\copyright~2015 IEEE}
+% Remember, if you use this you must call \IEEEpubidadjcol in the second
+% column for its text to clear the IEEEpubid mark.
+
+
+
+% use for special paper notices
+%\IEEEspecialpapernotice{(Invited Paper)}
+
+
+% for Transactions on Magnetics papers, we must declare the abstract and
+% index terms PRIOR to the title within the \IEEEtitleabstractindextext
+% IEEEtran command as these need to go into the title area created by
+% \maketitle.
+% As a general rule, do not put math, special symbols or citations
+% in the abstract or keywords.
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+
+Traditional automated mushroom identification is primarily a unimodal image classification task, which most systems predicting only species labels and numerical confidence scores from a single image. However, such a single modality approaches, lack of ecological grounding, language based reasoning, and interpretable outputs,limiting their practical utilities in real world contexts, where misidentifying mushroom species can result in severe health consequences. 
+In this study, we proposes a unified multimodal mushroom classification framework centered around a four stage pipeline: (1) computer vision deep learning classification based on models architecture benchmarking, (2) ecological context retrieval, (3) Large Language Model (LLM) audit reasoning, and (4) interpretable output generation. Eight model architectures were evaluated across 169 species and 689,000 images. Among these, YOLOv26n-cls was selected as the deployment model, achieving  88.1\% on Top-1 scores and 98.4\% Top-5 accuracy, with an optimized inference speed of 4.8 ms CPU per image via TFLite export. An ablation study demonstrated that adding a Gemini LLM audit layer raised dangerous species safety recall from 36.1\% to 93.6\% for the deployed model. These results indicate that multimodal pipelines combining vision classification, ecological context, and LLM reasoning produce more informative and interpretable outputs compared to isolated image scoring and supporting more informed identification in real-word contexts. The coding section are available at GitHub and Live on Google Cloud.
+
+\end{abstract}
+
+% Note that keywords are not normally used for peerreview papers.
+\begin{IEEEkeywords}
+Mushroom classification, Multimodal AI, Explainable AI, Ecological context, Large language models.
+\end{IEEEkeywords}}
+
+
+
+% make the title area
+\maketitle
+
+
+% To allow for easy dual compilation without having to reenter the
+% abstract/keywords data, the \IEEEtitleabstractindextext text will
+% not be used in maketitle, but will appear (i.e., to be "transported")
+% here as \IEEEdisplaynontitleabstractindextext when the compsoc 
+% or transmag modes are not selected <OR> if conference mode is selected 
+% - because all conference papers position the abstract like regular
+% papers do.
+\IEEEdisplaynontitleabstractindextext
+% \IEEEdisplaynontitleabstractindextext has no effect when using
+% compsoc or transmag under a non-conference mode.
+
+
+
+
+
+
+
+% For peer review papers, you can put extra information on the cover
+% page as needed:
+% \ifCLASSOPTIONpeerreview
+% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
+% \fi
+%
+% For peerreview papers, this IEEEtran command inserts a page break and
+% creates the second title. It will be ignored for other modes.
+\IEEEpeerreviewmaketitle
+
+
+
+\section{\textbf{Introduction}}
+% The very first letter is a 2 line initial drop letter followed
+% by the rest of the first word in caps.
+% 
+% form to use if the first word consists of a single letter:
+% \IEEEPARstart{A}{demo} file is ....
+% 
+% form to use if you need the single drop letter followed by
+% normal text (unknown if ever used by the IEEE):
+% \IEEEPARstart{A}{}demo file is ....
+% 
+% Some journals put the first two words in caps:
+% \IEEEPARstart{T}{his demo} file is ....
+% 
+% Here we have the typical use of a "T" for an initial drop letter
+% and "HIS" in caps to complete the first word.
+\subsection{Background and Problem Statement}
+
+\IEEEPARstart{M}{ushrooms} represent a growing area of scientific and commercial interest, with applications ranging from the food industry to bio pharmaceutical development\cite{mayirnao2025}. However, distinguishing between mushroom species remains difficult due to the fine-grained nature of their physical features between certain species\cite{sevindik2025}. 
+
+In “real world” context, certain poisonous or edible mushroom species can appear nearly identical to the untrained eye, so that misidentifying them can therefore lead to fatal consequences. The challenge is further compounded by the fact that mushrooms appearance changes with age, weather exposure, and geographic condition, which is reducing the reliability of identification based solely on visual inspection\cite{picek2025fungitastic}.
+
+Existing researches focuses on a range of architecture including convolutional neural networks, residual networks, and object detection models, demonstrating the promising prediction under controlled experimental settings\cite{kuznetsov2026}. Despite the growing availability of AI Deep leaning mushroom identification tools, several existing research papers recognized mushrooms as a standard image classification, predicting only species labels and a numerical confidence score from a single photograph.
+ 
+ These outputs are generated without consideration of ecological factors such as habitat, season, or geographic location, even though these factors may be relevant when distinguishing between visually similar species and assessing the risk and supporting trust especially when safety is a critical challenge situation\cite{picek2025fungitastic}. Furthermore, current systems rarely provide language based reasoning to help users understand of the basics of a prediction, remain limited in practical capability and transparency and do not yet meet the border requirements of real word application and suitable for real-world use\cite{kuznetsov2026}.
+
+To address these limitations, we propose a unified multimodal mushroom classification framework that integrates computer vision, structured ecological knowledge, and large language model reasoning as a complete end-to-end system, with the primary aim of reducing dangerous misidentification risk and providing interpretable identification support.
+% You must have at least 2 lines in the paragraph with the drop letter
+% (should never be an issue)
+
+
+% needed in second column of first page if using \IEEEpubid
+%\IEEEpubidadjcol
+
+\subsection{\textbf{Research Questions}}
+This study addresses the following four research questions corresponding directly to research gaps: 
+
+\textbf{{RQ1:}} Which deep learning model architecture achieves the highest Top-1 and Top-5 classification accuracy for mushroom species identification across 169 species and what are the trade-offs in inference speed and deployment efficiency?
+
+\textbf{{RQ2:}} To what extent do multimodal outputs, combining vision classification with ecological context and LLM reasoning, provide better identification information compared to single-image approaches for visually similar species?
+
+\textbf{{RQ3:}} To what degree are LLM-generated species reasoning outputs consistent with structured ecological database records across a sample of classification decisions?
+
+\textbf{{RQ4:}} Does a structured multimodal output schema provide demonstrably more identification-relevant information than a raw numerical confidence score?
+
+\subsection{Research Contribution}
+To address this gap, this study makes four original contributions: 
+
+\subsubsection{A deployable multimodal pipeline.} We propose and implement a novel four stages pipeline that integrates the four components below into a single end-to0end deployable system.
+
+\subsubsection{A systematic architecture benchmark.} We provide a systematic benchmark of YOLOv26n-cls, ConvNeXt-Tiny and DINOv2, evaluated across 169 species under production deployment conditions. 
+
+\subsubsection{An LLM audit layer for visual verification.} The system applied an LLM audit layer that receives the input image, the vision prediction, and the ecological context record, and generate natural language reasoning for classification decisions, identify the prediction if it is plausible and the case where the vision model should not be trusted.
+
+\subsubsection{An interpretable output schema.} We introduce output schema designed, including confidence levels, ecological notes, and identification guidance for real-word foraging contexts. 
+
+
+% ---------------- Related Work ----------------
+\section{\textbf{Related works}}
+\subsection{Traditional Mushroom Identification}
+Mushroom identification has evolved from traditional mushroom observation and expert mycological assessment to rule based systems, machine learning models and automated real time deep learning classifiers. These systems can now operate directly on raw visual input, but they remains limited in the safety critical context where implementing only visual classification may be insufficient \cite{kuznetsov2026}.
+
+\subsection{Mushroom Species Classification Using Computer Vision}
+As of 2026, computer vision has become the essential tools to classify mushroom species, particularity as deep learning method can learn directly from visual features such as color, shape, texture and structural patterns. Recent studies demonstrates the progression from CNN architectures toward more real time system, several study have compared DenseNet121,  EfficientNet-B0, MobileNetV3, and ShuffleNet for fungi classification\cite{korkmaz2025}\cite{ozsari2024}. This development has moved beyond static classification toward real time detection in including edge deployment and toxic species\cite{duman2025}\cite{wei2025pmyolo}.
+ Among transfer and hybrid approaches Swin Transformer and a multimodal MDF-DETR architecture have been explored, though transfromer found underperfrom CNN baseline on smal fungi dataset\cite{ozsari2024}\cite{wang2025mdfdetr}. Base on this review, we sekect threee distint architecture for systemmatic benchmarking, YOLOv26n-cls, ConvNeXt-Tiny CNN arcgitecture and ConvNeXt-Tiny is self-supervised visin transformers.
+
+\subsection{\textbf{Ecological and Contextual Factors}}
+A significant challenge in mushroom classification is the lack of public datasets that combine visual data with ecological metadata such as habit, toxicity, or geographic context as classification inputs (Table I). Picek et al.\cite{picek2022danishfungi} introduced the Danish Fungi 2020 dataset (DF24-Mini split), an expert-verified dataset with temporal metadata across a wide range of species which is use in this study for external validation. Recently, Picek et al. \cite{picek2025fungitastic} furthers published baseline metrics for state-of-the-art architectures on this exact dataset. Their FungiTastic benchmark further shows that that visual classification alone achieves only 40\% F1 and remains unrealistic at taxonomic scale, providing strong motivation for integrating ecological context into the pipeline. 
+
+\subsection{Explainability and Safety-Critical AI}
+The black-box nature of deep learning is a particular challenge in safety-critical contexts, where users must not only receive a prediction but understand its basis. Within the mushroom literature, explainability has been applied through post-hoc visual heatmaps, including Grad-CAM and Score-CAM, Grad-CAM with Integrated Gradients\cite{sevindik2025}\cite{korkmaz2025}\cite{ozsari2024}. These technique may improve transparency, but a heatmap cannot explains why a prediction should be trusted, what alternatives were considered, or what action to take. Studies in toxic species detetcion still only predict toxic species with clas labels and bounding boxes with no data for safety guidance\cite{wei2025pmyolo}. While,  this limiation of miss classification between edible and toxic have been acknowledge in the litarature but do not include this into a decision support layer\cite{picek2025fungitastic}. 
+
+\subsection{Summary of Gaps}
+Despite recent advances in deep learning for automated mushroom species classification, several challenges remain unsolved, which can be summarized as four critical limitations. First, prior systems rely solely on single image inputs, which are insufficient to distinguish visually similar toxic and edible species that require multi angle or part based inspection  and therefore remain limited in practical capability[]. Second, as far as we know, non of the current literature integrates environmental context such as, season, habitat, geographic range and mycological habitat constraints into the model’s architecture pipeline, leaving predictions ecologically ungrounded. Third, most model performs like black-box systems that provides prediction scores without language explainable reasoning, leaving the users unable to assess why a prediction was made which may lead users to distrust the system[]. 
+
+
+% ---------------- METHODOLOGY ----------------
+\section{\textbf{Methodology}}
+\subsection{\textbf{Overview}}
+Our methodology addresses the four research questions into two main components. The first components is supervised visual classification, several computer vision architecture were trained and evaluated on the same 169 species mushroom image dataset to establish baseline classification performance for deployment efficiency. In the second, we experimented on an ablation study to evaluate the safety contribution of an LLM audit layer when added to each vision model, aims to providing empirical evidence for the value of multimodal reasoning over unimodal confidence scoring. In the production pipeline, the selected deployment model YOLOv26n-cls generates a species prediction from input image, which is then passed through a four stage pipeline that retrieve ecological metadata from the structure database. This metadata is combined with user input data information such as location and season. The combined information is then passed to an LLM audit layer and a set of deterministic rules to produce the final output. 
+
+\subsection{\textbf{Dataset}}
+
+\subsubsection{\textbf{Image Dataset}}
+All models were trained and evaluated on a dataset of 169 mushroom species comprising approximately 689,000 images sourced from Kaggle (zlatan599/mushroom1). Images were partitioned into an 80/10/10 train/validation/test split, with all models evaluated on the same held-out test set. The classification task was formulated as single-label supervised image classification, where each image is mapped to exactly one species label.
+
+\subsubsection{\textbf{Ecological Database}}
+To support multimodal pipeline, ecological metadata was compiled into a structured JSON database containing 12 fields per species, including toxicity classification, habitat, season, geographic region, morphological descriptions, known lookalike species, and foraging guidance. These records were compiled primarily from multiple open-source Wikipedia species articles and the iNaturalist open-access taxonomy database (iNaturalist, 2024), which were used to verify species names and ecological data. It is acknowledged that these records have not been independently verified against primary mycological sources and should therefore be treated as a prototype knowledge base. 
+
+
+\subsection{\textbf{Vision Model Benchmarking}}
+Eight computer vision architectures were initially explored to find thwe best model for production deployment. To keep the benchmark focused, three architecturally distinct models were selected for systematic benchmarking.
+
+\textbf{YOLOv26n-cls} is a lightweight YOLO-based image classier pretrained on ImageNet 1k (Jocher et al., 2023). In this study, it was used as a whole image classifier that predicts one mushroom species and confidence score from each input image because of it is a small model size, fast inference for CPU, and suitability for lightweight deployment (Sapkota  Karkee, 2025).
+
+\textbf{ConvNeXt-Tiny} is a modern convolutional neutrak network introduced by Liu et al.(2022). In this study, its original ImageNet classification head was replaced with a 169 class output layer for mushroom species classFification. It was included as a strong baseline for comparing accurcay agints the lightweight YOLO model. 
+
+\textbf{DINOv2-Small} is a self supervised Vision Transformer introduced by Oquab et al. (2023). In this study, a custom classification head was added to adapt its pretrained visual representations to the 169 mushroom species. It was included to evaluate whether self-supervised transformer features improve generalisation for finegained mushroom classification. 
+
+
+\subsection{\textbf{Experimental Configuration}}
+All three benchmarked models were initialized from pretraind weights and fine tuned on 169 species using consistent evaluation protocols regardless of training hardware with input resolution of 244x244 and maximum of 50 epochs with early stopping (patience 10) and were trained locally on an NVIDIA GeForce RTX 4070. 
+Notably, YOLOv26n-cls was fully fine-tuned using SGD with cosine learning rate scheduling, and subsequently exported to TFLite float16. ConvNeXt-Tiny required a two-phase PEFT strategy due to its larger parameter count, with the backbone frozen in Phase 1 and unfrozen at a reduced learning rate in Phase 2 to prevent catastrophic forgetting. DINOv2-Small was fine-tuned using AdamW with differential learning rates (1e-05 backbone, 1e-04 head) and a 5-epoch warmup.
+
+From all three models, YOLOv26n-cls was selected as the deployment model due to its balance between accuracy, model size, inference speed, and deployment suitability. A full configuration is provided in the Appendix:
+Table~\ref{tab:output_schema} \label{text:schema_mention}
+
+
+\subsection{\textbf{External Benchmarking using DF24-Mini}} 
+As established in Section II, to ensure our system's visual feature-extraction capabilities generalize beyond our Kaggle training set, YOLOv26n-cls was additionally fine-tuned on the Danish Fungi (DF24-Mini) dataset  \cite{picek2022danishfungi} and evaluated against baselines published by Picek et al.[1]. 
+
+The DF24-Mini dataset contains approximately 36,000 images across 182 species with only 11 species appear in both our primary training set and the DF24-Mini dataset (a $\sim$6\% overlap). This minimal overlap ensures the benchmark serves as a genuine test of morphological feature generalization rather than a re-test of familiar classes. The model was fine-tuned the YOLOv26n-cls model for 37 epochs at a 224$\times$224 resolution to maintain a strict 1:1 comparative methodology with the original Picek et al. baselines \cite{picek2022danishfungi}.
+
+
+\subsection{\textbf{Evaluation metrics}} 
+The primary evaluation metrics were Top-1 accuracy, Top-5 accuracy, parameter count, model size, and median inference latency. Top-1 accuracy measures whether the highest-confidence predicted class matches the true label:
+
+
+Top-5 accuracy measures whether the true label appears among the five highest-confidence predictions.
+
+For the ablation study, the primary metric is safety recall: the fraction of dangerous-species images correctly flagged at HIGH or CRITICAL risk by the full pipeline.
+
+\subsection{\textbf{Multimodal Pipeline Design}}
+The proposed framework is implemented as a four stages sequential pipeline, which each stage received the output from previous stages and generates additional contexts before passing the data forward. 
+
+\textbf{1) Computer Vision Classification}.
+The image is uploaded via HHTP POST to a FastAPI Vision API running YOLOv26n-cls in TFLite float16 format. The vision API returns the predicted species label and confidence score. If the confidence score falls below a threshold of 0.70, the pipeline will be notified as unreliable and stops the identification process. The prediction that above the confidence threshold are passed to the ecological retrieval stage.
+
+\textbf{2) {Ecological Context Retrieval}}
+The predicted species labels from stage 1 is then will look up against a structured ecological database using Pandas, unrecognized ecological fields are set to "Unknown". The retrieved ecological record, confidence score are then passed forward to stage 3, LLM audit layer. See appendix for data:
+
+\textbf{3) {LLM Audit layers}}
+The species label with confidence score, ecological database record including information provided by users (location, season) are assembled into structure prompt and submitted to the an  Open-source Google Gemini (production) or Llama 3 (local deployment).  The LLM is structured based on user's environment context and response with one of the three verdicts: plausible, suspicious or danger, with a short natural language explanation then passed to stage 4.
+
+\textbf{4) {Output risk classification}}
+To migrate this model hallucination, we set the python rule based pythons will follow the rule based with hard code, the rules is rule  (1) species with "deadly" or "highly toxic" keywords are unconditionally CRITICAL; (2) predictions below 0.70 confidence are HIGH; (3) an LLM suspicious verdict escalates to HIGH; (4) toxic but non-deadly species are MODERATE. This layered design ensures the LLM provides interpretive reasoning while deterministic rules provide safety guarantees that cannot be overridden by model uncertainty.
+
+
+
+\subsection{\textbf{Deployment and Output}}  
+The mushroom framework pipeline is implemented as two containerized microservices via Docker Compose for local deployment and Google Cloud Run for production. The vision API runs the TFLite float16 model in a lightweight container of approximately 200 MB, eliminating PyTorch runtime dependency. The UI microservice provides a  Gradio web interface. Both service connected over an internal Docker Network. The production on CPU constraints is primary reason for YOLOv26n-cls TFLite was selected as the deployment model over the higher accuracy alternatives. 
+
+The final end-to-end pipeline produces a structured identification report delivered to the user via the Gradio web interface. The report is designed to provide non-technical users   containing the predicted species, confidence score, toxicity class, ecological context, LLM field assessment, risk level (CRITICAL/HIGH/MODERATE/LOW), and a plain-language recommendation, as defined in Table VI.Table. ~\ref{tab:output_schema} \label{text:schema_mention} 
+
+\subsection{\textbf{Architecture Ablation Setup: Component Isolation}}
+To rigorously evaluate the contribution of each component in our framework, we conducted a three-way ablation study. The goal was to demonstrate that neither component works effectively in isolation, and that our chosen combination (YOLOv26n-cls paired with Gemini) is the optimal configuration for mobile deployment.
+
+We curated a specialized test set of 300 images (203 dangerous species, 97 safe species) using a fixed random seed (42) from the held-out test split. We evaluated three conditions:
+\begin{enumerate}
+    \item \textbf{Unimodal Vision:} Relying strictly on the vision architectures alone (YOLOv26n-cls, ConvNeXt-Tiny, DINOv2-Small). A safety warning is triggered automatically only if the model's confidence falls below a 70\% threshold.
+    \item \textbf{Unimodal LLM (Gemini Only):} Passing the raw image directly to the Gemini Flash Lite API to assess danger, with no vision model assistance.
+    \item \textbf{Multimodal Pipeline:} The vision model identifies the species, retrieves ecological context, and Gemini performs a final safety audit.
+\end{enumerate}
+
+Performance was measured using three metrics: Safety Recall (percentage of dangerous mushrooms correctly flagged), False Positive Rate (percentage of safe mushrooms wrongly flagged as dangerous), and the F1 Score (the harmonic mean of precision and recall, serving as our primary balancing metric). Smaller local models (Llama 3.2 and Gemma 4) were initially tested but excluded due to fundamental reasoning failures at their parameter scales.
+ 
+% ============== RESULTS AND ANALYSIS 
+\section{\textbf{Results and Analysis}}
+ 
+This section reports findings for the four research questions.It first compares (1) the three architecturally selected for systematic benchmarking: YOLOv26n-cls, ConvNeXt-Tiny, and DINOv2-Small. (2) It then evaluates YOLOv26n-cls on the external DF24-Mini benchmark, (3) compares the single vision classification and multimodal pipeline configurations to analysis the consistent of LLM audit layers, (4) and assesses the interoperability of the final structure output. 
+
+The full eight-architecture exploration is reported in
+Appendix~\ref{app:full-bench} and Per-model and per-class details from the LLM ablation are in Appendix~\ref{app:ablation}.
+ 
+ 
+\subsection{\textbf{Baseline Vision Model Performance (RQ1)}}\label{subsec:baseline}
+ 
+Table~\ref{tab:main-leaderboard} compares the three benchmarked
+architectures on accuracy and deployment cost on the held-out 10\% test
+split of the 169-species dataset. ConvNeXt-Tiny~(PEFT) achieved the
+highest Top-1 accuracy at 91.1\%, 3.0\,pp above YOLOv26n-cls; DINOv2-Small
+landed between them at [VERIFY 92.8\%]\footnote{Best validation Top-1
+recorded at epoch~49 in \texttt{docs/dinov2/results.csv}. Replace with
+held-out test Top-1 if separately measured.}. Top-5 accuracy converges
+within 0.1\,pp across all three (98.3\%--98.4\%): the correct species
+sits among the top-five candidates in $\sim$98\% of cases regardless of
+architecture choice. The full 8-model leaderboard --- including
+EfficientNet-B0, YOLOv8n-cls, and the TaxonomicYOLO26 dual-head
+experiment --- is reported in Appendix~\ref{app:full-bench},
+Table~\ref{tab:full-leaderboard}.
+ 
+\begin{table}[h]
+\centering
+\caption{Three benchmarked architectures on the 169-species held-out
+test split (80/10/10, batch=1, 224$\times$224). Full 8-model leaderboard
+in Appendix~\ref{app:full-bench}.}
+\label{tab:main-leaderboard}
+\small
+\begin{tabular}{@{}lcccrr@{}}
+\hline
+\textbf{Model} & \textbf{Top-1} & \textbf{Top-5} & \textbf{Params} & \textbf{Size} & \textbf{CPU (ms)} \\
+\hline
+ConvNeXt-T (PEFT)         & \textbf{91.1\%} & 98.3\% & 28.6M & 110 MB & 35.6 \\
+DINOv2-Small              & [VERIFY 92.8\%] & 98.4\% & 22.0M & 85 MB  & --   \\
+YOLOv26n-cls (TFLite f16) & 88.1\%          & 98.4\% & 1.74M & 3.6 MB & \textbf{4.8} \\
+\hline
+\end{tabular}
+\end{table}
+ 
+The deployment-cost ranking diverges sharply from the accuracy ranking.
+After float16 TFLite export, YOLOv26n-cls reaches 88.1\% Top-1 at
+1.74\,M parameters, 3.6\,MB of weights, and 4.8\,ms CPU inference --- a
+$13\times$ reduction in parameter count, $24\times$ reduction in file
+size, and $7.4\times$ CPU speedup relative to ConvNeXt-Tiny~(PEFT) for a
+3.0\,pp accuracy cost. The CPU speedup originates from TFLite's XNNPACK
+delegate, which contains hand-optimised CPU kernels for the operations
+in the YOLOv26 graph; PyTorch's CPU runtime for ConvNeXt-Tiny does not
+benefit from this level of operator-level optimisation despite
+ConvNeXt's heavy use of depthwise convolutions. Implications for
+production deployment are addressed in Section~\ref{subsec:selected}.
+ 
+ 
+\subsection{External Benchmark: DF24-Mini (RQ1)}\label{subsec:df24}
+ 
+To validate that the deployed architecture generalises beyond the custom
+169-species training set, YOLOv26n-cls was fine-tuned on the Danish
+Fungi DF24-Mini training split and evaluated on the held-out public test
+split~\cite{picek2022danishfungi}. The DF24-Mini species list overlaps with our primary
+training set on only 11 of 182 classes ($\sim$6\%), so the benchmark
+tests morphological generalisation rather than re-testing familiar
+classes. Table~\ref{tab:df24-main} reports our YOLOv26n-cls result
+alongside the five published baselines.
+ 
+\begin{table}[h]
+\centering
+\caption{DF24-Mini benchmark results (224$\times$224). Baselines from
+Picek et al.~\cite{picek2022danishfungi}; our result evaluated at epoch~37.}
+\label{tab:df24-main}
+\small
+\begin{tabular}{@{}lrcc@{}}
+\hline
+\textbf{Model} & \textbf{Params} & \textbf{Top-1} & \textbf{Top-3} \\
+\hline
+ViT-Large/16              & 307M  & 67.52\% & 84.46\% \\
+ViT-Base/16               & 86M   & 65.33\% & 82.44\% \\
+SE-ResNeXt-101            & 49M   & 62.42\% & 80.71\% \\
+\textbf{YOLOv26n-cls (Ours)} & \textbf{1.74M} & \textbf{60.17\%} & \textbf{78.93\%} \\
+EfficientNet-B3           & 12M   & 59.31\% & 78.79\% \\
+EfficientNet-B0           & 5.3M  & 58.58\% & 77.01\% \\
+\hline
+\end{tabular}
+\end{table}
+ 
+YOLOv26n-cls outperformed both EfficientNet baselines on Top-1 and
+Top-3 with a parameter budget 3--7$\times$ smaller, and trailed the
+larger ViT and SE-ResNeXt-101 architectures by a margin consistent with
+their roughly 30--170$\times$ greater parameter count. We interpret this
+as external validation that the YOLOv26n classification head extracts
+generalisable morphological features rather than memorising the primary
+training distribution. The DF24-Mini benchmark was performed only on
+YOLOv26n-cls; reproducing it on ConvNeXt-Tiny and DINOv2-Small is left
+for future work.
+ 
+ \subsection{\textbf{Multimodal vs Unimodal Pipeline (RQ2)}}
+
+The ablation study yielded several critical findings regarding system safety and component synergy, detailed in Table \ref{tab:ablation_full_results}.
+
+\textbf{Neither component works well alone.} Vision models on their own missed between 70\% and 85\% of dangerous species. Conversely, while the Gemini LLM operating alone achieved a high safety recall of 92.6\%, it incorrectly flagged 70.7\% of safe species as dangerous. In practice, this level of false alarms would condition users to ignore the warnings entirely, rendering the standalone LLM impractical. The combination of both components is what works.
+
+\textbf{Vision model accuracy does not equal fallback safety.} If network connectivity fails, the application must fall back to the vision model alone. Under these unimodal conditions, the highly accurate ConvNeXt and DINOv2 models are the most dangerous fallback options, catching only 14.3\% and 15.3\% of dangerous species, respectively. This is caused by an overconfidence trap: they almost always generate a high-confidence prediction, meaning our automatic low-confidence warning (<70\%) rarely triggers. YOLOv26n-cls, being less certain on average, triggers the safety threshold more frequently, catching 30.0\% of dangerous species on its own. A highly accurate but overconfident model is the most dangerous fallback because it provides the user with a confident wrong answer and no warning.
+
+\textbf{Synergy normalizes performance.} Once the Gemini auditor is introduced, the safety gap between the vision architectures closes. All three Multimodal configurations achieved F1 scores within an exceptionally tight margin (80.0\% to 81.9\%). Adding Gemini effectively bridges the gap between a lightweight, inexpensive model and a massive, computationally expensive one.
+
+\begin{table}[h]
+\centering
+\caption{Ablation Study Results: Safety Recall, False Positive Rate (FPR), and F1 Score on 300 Images.}
+\label{tab:ablation_full_results}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lccc@{}}
+\hline
+\textbf{Configuration} & \textbf{Safety Recall} & \textbf{FPR (Safe wrongly flagged)} & \textbf{F1 Score} \\
+\hline
+LLM Only (Gemini)      & \textbf{92.6\%} & 70.7\% & 81.6\% \\
+\hline
+YOLOv26n + Gemini      & 75.9\% & 18.6\% & 80.0\% \\
+ConvNeXt-T + Gemini    & 73.4\% & 10.3\% & 81.2\% \\
+DINOv2-S + Gemini      & 74.9\% & 10.3\% & \textbf{81.9\%} \\
+\hline
+YOLOv26n Alone         & 30.0\% & 16.5\% & 44.2\% \\
+DINOv2-S Alone         & 15.3\% & \textbf{0.0\%}  & 26.5\% \\
+ConvNeXt-T Alone       & 14.3\% & \textbf{0.0\%}  & 25.0\% \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+Consequently, the selection of the vision architecture is not fundamentally a safety decision, but a practical deployment decision. While ConvNeXt and DINOv2 require GPUs to achieve acceptable latencies, YOLOv26n-cls operates at 15 ms on a CPU with a 1.74M parameter footprint. Because the Gemini API request dominates the overall pipeline latency (500--1500 ms), the YOLO + Gemini configuration emerges as the unequivocal choice for edge deployment.
+
+ 
+\subsection{LLM Reasoning Consistency (RQ3)}\label{subsec:llm}
+ 
+RQ3 asks whether the LLM's natural-language reasoning is consistent with
+the structured ecological database content. The 90--94\% safety recall
+in Table~\ref{tab:multimodal} provides indirect evidence: this metric
+requires the LLM verdict to align with the toxicity field of the actual
+species. Two failed configurations on smaller local LLMs further
+illustrate where consistency breaks down.
+ 
+\textit{Llama3 (text-only)} produced an artificially inflated
+$\sim$90\% safety recall via a label-echo failure mode: the audit prompt
+includes the toxicity field from the context CSV, and the model re-read
+the label and echoed it back as the verdict rather than reasoning from
+visual or environmental evidence. \textit{Gemma~4 (2B-parameter
+multimodal)} produced recall statistically indistinguishable from the
+no-LLM baseline once an \texttt{image\_path} forwarding bug was fixed;
+the model lacks sufficient world knowledge for fine-grained mycological
+reasoning at 2B parameters. Both configurations were excluded from the
+deployed pipeline. Full failure-mode analysis is in
+Appendix~\ref{app:ablation}.
+ 
+\textit{Gemini~3 Flash}, the deployed audit model, produces verdicts
+that engage with both the image and the database content. [TODO: insert
+measured agreement rate from manual coding of $N=30$ random Gemini audit
+responses on (a)~ecological-context citation, (b)~visual-feature
+reference, and (c)~justification of disagreements with the vision
+prediction. Protocol in Appendix~\ref{app:ablation}.]
+ 
+The collective finding is that LLM reasoning consistency is a function
+of model capability: frontier-class multimodal models reason from the
+database content, while smaller text-only models pattern-match on its
+labels. The audit layer therefore requires a cloud LLM API regardless
+of how lightweight the local vision model is.
+ 
+ 
+\subsection{Output Interpretability (RQ4)}\label{subsec:output}
+ 
+To address RQ4, we performed a content analysis comparing the
+information dimensions present in (a)~a typical unimodal classifier
+output and (b)~the structured multimodal output produced by our
+pipeline (Table~\ref{tab:output-fields}). A standard image classifier
+returns 2 fields. The pipeline's structured report contains 13 fields
+spanning three dimensions: identification (4), ecological grounding
+(5), and risk reasoning (4).
+ 
+\begin{table}[h]
+\centering
+\caption{Information dimensions: unimodal vs multimodal output.}
+\label{tab:output-fields}
+\small
+\begin{tabular}{llcc}
+\hline
+\textbf{Dimension} & \textbf{Field} & \textbf{Uni} & \textbf{Multi} \\
+\hline
+Identification    & Predicted species   & $\checkmark$ & $\checkmark$ \\
+                  & Confidence score    & $\checkmark$ & $\checkmark$ \\
+                  & Toxicity class      & --           & $\checkmark$ \\
+                  & Edibility           & --           & $\checkmark$ \\
+\hline
+Ecological        & Habitat             & --           & $\checkmark$ \\
+grounding         & Active season       & --           & $\checkmark$ \\
+                  & Geographic region   & --           & $\checkmark$ \\
+                  & Known lookalikes    & --           & $\checkmark$ \\
+                  & Environment tips    & --           & $\checkmark$ \\
+\hline
+Risk reasoning    & Key warnings        & --           & $\checkmark$ \\
+                  & LLM reasoning       & --           & $\checkmark$ \\
+                  & Risk level          & --           & $\checkmark$ \\
+                  & Recommendation      & --           & $\checkmark$ \\
+\hline
+\textbf{Total}    &                     & \textbf{2}   & \textbf{13}  \\
+\hline
+\end{tabular}
+\end{table}
+ 
+The multimodal output adds eleven information dimensions absent from a
+confidence score. Three of these (LLM reasoning, risk level,
+recommendation) are derived rather than retrieved: they synthesise
+evidence from the image, the vision prediction, the ecological database,
+and user-provided context (season, location) into a single actionable
+output. A non-technical user receiving \texttt{Cantharellus cibarius,
+0.74} cannot determine reliability or next steps; the same user
+receiving the structured report receives a discrete risk verdict
+(\textsc{Critical} / \textsc{High} / \textsc{Moderate} / \textsc{Low})
+alongside the ecological evidence supporting it. Formal user evaluation
+of comprehension is identified as future work; the present comparison
+is a structural demonstration that the multimodal schema carries
+strictly more identification-relevant information than the unimodal
+alternative.
+ 
+ 
+\subsection{Selected Deployment Model: YOLOv26n-cls}\label{subsec:selected}
+ 
+YOLOv26n-cls was selected as the production deployment model despite
+ConvNeXt-Tiny and DINOv2-Small achieving higher Top-1 accuracy. The
+selection is supported by two findings.
+(Table~\ref{tab:deployment}).
+ 
+\begin{table}[h]
+\centering
+\caption{Production deployment comparison: YOLOv26n-cls (TFLite f16) vs
+the two higher-accuracy alternatives.}
+\label{tab:deployment}
+\small
+\begin{tabular}{@{}lccc@{}}
+\hline
+\textbf{Factor} & \textbf{YOLOv26n} & \textbf{ConvNeXt-T} & \textbf{DINOv2-S} \\
+                & \textbf{(TFLite)} & \textbf{(PEFT)}     &                   \\
+\hline
+Parameters              & 1.74M           & 28.6M       & 22.0M       \\
+Weight file size        & 3.6 MB          & 110 MB      & 85 MB       \\
+Export format           & TFLite f16      & PyTorch     & PyTorch     \\
+Docker image size       & $\sim$200 MB    & $\sim$1.5 GB & $\sim$1.5 GB \\
+CPU inference           & \textbf{4.8 ms} & 35.6 ms     & --          \\
+Top-1 accuracy          & 88.1\%          & 91.1\%      & [VERIFY 92.8\%] \\
+Safety recall (+Gemini) & \textbf{93.6\%} & 90.1\%      & 90.1\%      \\
+\hline
+\end{tabular}
+\end{table}
+ 
+\textit{First}, the LLM audit layer adds 57.5\,pp of safety recall to
+YOLOv26n-cls, raising it to 93.6\% --- higher than the +Gemini
+configurations of either ConvNeXt-Tiny or DINOv2-Small (both 90.1\%)
+despite their accuracy advantage. The audit layer compensates for
+YOLOv26n-cls's weaker fine-grained discrimination and overcompensates
+against the larger models' overconfidence; the deployed system's
+end-to-end accuracy floor is set by the LLM, not by the vision model
+alone.
+ 
+\textit{Second}, the LLM API call dominates total pipeline latency at
+approximately 500--1500\,ms per request (vendor-reported), so the
+difference between 4.8\,ms TFLite inference and the 30+\,ms PyTorch
+alternatives is negligible end-to-end. The vision-model choice
+therefore reduces to on-device footprint: TFLite YOLOv26n-cls runs in a
+$\sim$200\,MB Cloud Run container with no PyTorch dependency, whereas
+ConvNeXt-Tiny and DINOv2-Small each require a $\sim$1.5\,GB PyTorch
+image. For serverless scale-to-zero deployment, the smaller image
+cold-starts faster and costs less per request.
+ 
+The deployed YOLOv26n-cls\,+\,Gemini configuration achieves 93.6\%
+safety recall on dangerous species with the highest end-to-end
+production efficiency among the three benchmarked architectures.
+ 
+
+% ---------------- Discussion ----------------
+\section{Discussion}
+
+"Formal user evaluation and large-scale ground truth validation are identified as directions for future work."
+
+% ---------------- Conclusion----------------
+\section{Conclusion}
+The conclusion goes here.
+
+
+
+
+
+% if have a single appendix:
+%\appendix[Proof of the Zonklar Equations]
+% or
+%\appendix  % for no appendix heading
+% do not use \section anymore after \appendix, only \section*
+% is possibly needed
+
+% use appendices with more than one appendix
+% then use \section to start each appendix
+% you must declare a \section before using any
+% \subsection or using \label (\appendices by itself
+% starts a section numbered zero.)
+%
+
+
+\appendices
+
+\section{LLM Audit Prompt (Ollama/Gemini)}
+
+The following prompt was used for the LLM audit layer alongside each mushroom photograph during evaluation.
+
+\textbf{System Prompt:} You are a field mycology safety auditor. You have been given a photo of a mushroom taken in the field. A computer vision model identified it as [PREDICTED SPECIES] with [CONFIDENCE]\% confidence.
+
+Ecological database entry for [PREDICTED SPECIES]:
+\begin{itemize}
+    \item Toxicity: [TOXICITY]
+    \item Edibility: [EDIBILITY]
+    \item Typical habitat: [HABITAT]
+    \item Season: [SEASON]
+    \item Region: [REGION]
+    \item Key warnings: [KEY WARNINGS]
+\end{itemize}
+
+Visual identification features to check in the photo:
+\begin{itemize}
+    \item Cap: [CAP DESCRIPTION]
+    \item Gills: [GILL DESCRIPTION]
+    \item Stem: [STEM DESCRIPTION]
+    \item Smell: [SMELL]
+    \item Dangerous lookalikes: [LOOKALIKES]
+\end{itemize}
+
+Your Task:
+\begin{enumerate}
+    \item Look at the photo carefully and compare it against the known features above.
+    \item Comment on what you can see --- cap shape/colour, gill colour, stem, any bruising or staining.
+    \item Mention relevant field checks the user should do in person.
+    \item State AGREE if the photo is consistent with [PREDICTED SPECIES], or DISAGREE if something looks wrong.
+    \item If the species is toxic or deadly, issue a clear safety warning.
+\end{enumerate}
+
+Begin your response with "AGREE", "DISAGREE", or "DANGER", then give your field assessment.
+
+\textit{Note: The ecological fields (habitat, season, toxicity, morphological features) are drawn from a curated species context database of 169 mushroom classes. In the ablation evaluation, user environment fields (season, location) were set to Unknown as the test set is evaluated without real-world geolocation context.}
+
+
+\section{Ablation Study Test Set (Dangerous Species)}
+
+The ablation evaluation was restricted to the 40 species below, selected from the held-out test split (\texttt{data/dataset\_split/test/}) on the basis that their toxicity classification contains at least one of the following keywords: Deadly, Highly Toxic, Toxic, Hallucinogenic, or Pathogenic. Up to 20 images per species were sampled (seed 42), yielding a maximum of 800 images. The partial evaluation reported in this paper used 245 images across these 40 classes.
+
+\section{ape}
+\begin{table}[h]
+\centering
+\caption{Ablation Study Test Set: 40 Dangerous Species}
+\label{tab:app_c_species}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}llll@{}}
+\hline
+\textbf{Species} & \textbf{Toxicity} & \textbf{Species} & \textbf{Toxicity} \\
+\hline
+\textit{Amanita phalloides} & Deadly & \textit{Pholiota squarrosa} & Toxic \\
+\textit{Galerina marginata} & Deadly & \textit{Stropharia aeruginosa} & Edible (C) / Toxic \\
+\textit{Paxillus involutus} & Deadly & \textit{Clitocybe nebularis} & Toxic (For many) \\
+\textit{Gyromitra esculenta} & Deadly (Raw)/Toxic & \textit{Coprinopsis atramentaria} & Toxic (w/ alcohol) \\
+\textit{Amanita pantherina} & Highly Toxic & \textit{Hygrophoropsis aurantiaca} & Toxic (Mild)/Edible \\
+\textit{Agaricus xanthodermus} & Toxic & \textit{Lactarius torminosus} & Toxic (R)/Edible (P) \\
+\textit{Amanita augusta} & Toxic & \textit{Panaeolus papilionaceus} & Toxic (Mild) \\
+\textit{Amanita brunnescens} & Toxic & \textit{Schizophyllum commune} & Toxic / Pathogenic \\
+\textit{Amanita citrina} & Toxic & \textit{Tapinella atrotomentosa} & Toxic (R)/Edible (P) \\
+\textit{Amanita flavoconia} & Toxic & \textit{Verpa bohemica} & Toxic (R)/Edible (P) \\
+\textit{Chlorophyllum brunneum} & Toxic & \textit{Vulpicida pinastri} & Toxic (Lichen) \\
+\textit{Chlorophyllum molybdites} & Toxic & \textit{Amanita muscaria} & Toxic / Halluc. \\
+\textit{Gyromitra gigas} & Toxic & \textit{Amanita persicina} & Toxic / Halluc. \\
+\textit{Gyromitra infula} & Toxic & \textit{Gymnopilus luteofolius} & Toxic / Halluc. \\
+\textit{Hypholoma fasciculare} & Toxic & \textit{Psilocybe azurescens} & Toxic / Halluc. \\
+\textit{Lactarius turpis} & Toxic & \textit{Psilocybe caerulescens} & Toxic / Halluc. \\
+\textit{Leratiomyces ceres} & Toxic & \textit{Psilocybe cubensis} & Toxic / Halluc. \\
+\textit{Omphalotus illudens} & Toxic & \textit{Psilocybe cyanescens} & Toxic / Halluc. \\
+\textit{Omphalotus olivascens} & Toxic & \textit{Psilocybe ovoideocystidiata} & Toxic / Halluc. \\
+\textit{Pholiota aurivella} & Edible (C) / Toxic & \textit{Psilocybe pelliculosa} & Toxic / Halluc. \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+
+\section{Full Architecture Benchmark}\label{app:full-bench}
+ 
+This appendix reports the full eight-architecture exploration referenced
+in Section~\ref{subsec:baseline}. Three architectures (YOLOv26n-cls,
+ConvNeXt-Tiny~PEFT, DINOv2-Small) were selected for systematic
+benchmarking because they represent fundamentally different design
+paradigms; the remaining five were trained or evaluated as
+context-setting baselines. ViT-S/16 was scoped during the literature
+review but was not trained to convergence within project budget; it is
+included in the benchmarking narrative for completeness but not in the
+results table.
+ 
+Table~\ref{tab:full-leaderboard} reports every trained model on the
+held-out 10\% test split of the 169-species dataset. CPU inference times
+were measured at batch=1 with 50 warmup passes followed by 200 timed
+passes; the TFLite f16 row uses the XNNPACK delegate.
+ 
+\begin{table*}[!t]
+\centering
+\caption{Full leaderboard across all trained architectures on the
+169-species held-out test split (80/10/10, batch=1, 224$\times$224).}
+\label{tab:full-leaderboard}
+\small
+\begin{tabular}{@{}lccrrrrl@{}}
+\hline
+\textbf{Model} & \textbf{Top-1} & \textbf{Top-5} & \textbf{Params}
+& \textbf{Size} & \textbf{GPU (ms)} & \textbf{CPU (ms)} & \textbf{Notes} \\
+\hline
+DINOv2-Small               & [VERIFY 92.8\%] & [VERIFY 98.4\%] & 22.0M & 85 MB    & --   & --   & Self-supervised ViT, accuracy leader \\
+ConvNeXt-Tiny (PEFT)       & 91.1\%          & 98.3\%          & 28.6M & 110 MB   & 7.6  & 35.6 & Modern CNN, PEFT two-phase           \\
+EfficientNet-B0            & 89.5\%          & 97.9\%          & 5.3M  & 17.2 MB  & 11.6 & 19.2 & Classification-native CNN            \\
+YOLOv26n-cls (PyTorch)     & 88.1\%          & 98.4\%          & 1.74M & 3.6 MB   & 6.3  & 7.1  & Production source                    \\
+YOLOv26n-cls (TFLite f16)  & 88.1\%          & 98.4\%          & 1.74M & 3.6 MB   & --   & 4.8  & \textbf{Deployed model}              \\
+YOLOv8n-cls                & 86.8\%          & 97.9\%          & 2.7M  & 3.4 MB   & 4.6  & 6.3  & Original baseline                    \\
+TaxonomicYOLO26            & 79.7\%          & --              & $\sim$2M & 25.0 MB & --   & --  & Dual-head genus + species            \\
+\hline
+\multicolumn{8}{l}{\textit{Scoped but not trained:}~ViT-S/16, YOLOv11n-cls.} \\
+\hline
+\end{tabular}
+\end{table*}
+ 
+\textit{Why three architectures were selected for systematic
+benchmarking.} The three benchmarked models cover three distinct
+representation paradigms: (i)~YOLOv26n-cls --- detection-derived
+classifier, ImageNet-1k pretrained, optimised for edge inference;
+(ii)~ConvNeXt-Tiny --- modern CNN with ViT-style design choices,
+ImageNet-1k pretrained, larger parameter budget; (iii)~DINOv2-Small ---
+self-supervised ViT pretrained on 142M images without labels, intended
+to test whether self-supervised features generalise to fine-grained
+mycological classification. EfficientNet-B0 and the YOLO baselines were
+trained to set context but not subjected to the full multimodal
+ablation; TaxonomicYOLO26 was an exploratory dual-head experiment
+(predicting genus and species from a shared backbone) which
+underperformed the single-head YOLOv26n by 8.4\,pp Top-1 and was
+abandoned. ViT-S/16 was scoped but not trained to convergence within
+project budget; YOLOv11n-cls was bypassed in favour of the newer
+YOLOv26n.
+ 
+\textit{Architecture-specific training notes.} ConvNeXt-Tiny full
+fine-tuning of all 28.6\,M parameters required approximately
+7,278\,seconds per epoch on the RTX~4070, making 50-epoch training
+computationally infeasible. A two-phase Parameter-Efficient Fine-Tuning
+(PEFT) strategy reduced per-epoch time to $\sim$776\,seconds (a
+$9.4\times$ speedup) by freezing the stem and backbone stages 1--3
+during Phase~1 (epochs 1--10), then unfreezing the backbone with a
+differential learning rate (4e-05 backbone vs 4e-04 head) for Phase~2
+(epochs 11--50). DINOv2-Small used differential learning rates from the
+start (1e-05 backbone, 1e-04 head, a $10\times$ ratio) to preserve its
+self-supervised representations during fine-tuning, with a 5-epoch
+warmup followed by cosine decay; training terminated at epoch~49.
+YOLOv26n-cls used full fine-tuning across all parameters for 50 epochs
+under standard cosine LR scheduling and was subsequently exported to
+TFLite float16 via the XNNPACK delegate, reducing the Docker image from
+$\sim$1.5\,GB to $\sim$200\,MB while preserving prediction outputs.
+ 
+\textit{Hardware caveat.} DINOv2-Small was trained on an
+NVIDIA~A100-SXM4-40GB via Google Colab; YOLOv26n-cls and ConvNeXt-Tiny
+were trained locally on an NVIDIA GeForce RTX~4070. Training-time
+comparisons should therefore be interpreted with caution, but accuracy
+metrics are directly comparable as all models were evaluated on the
+same held-out test split.
+ 
+\textit{TaxonomicYOLO26 — abandoned dual-head experiment.} The
+TaxonomicYOLO26 variant added a parallel genus head to the YOLOv26n
+backbone, with the intention that hierarchical supervision (predicting
+both genus and species) would improve fine-grained discrimination on
+visually similar within-genus species (e.g.~\textit{Amanita phalloides}
+vs \textit{Amanita citrina}). In practice, the shared backbone splitting
+its capacity between genus and species objectives reduced single-head
+species accuracy by 8.4\,pp (79.7\% vs 88.1\% for vanilla YOLOv26n). The
+experiment was discontinued; future work could revisit dual-head
+training with a per-task adapter rather than a fully shared backbone.
+ 
+ 
+\section{LLM Ablation Study Details}\label{app:ablation}
+ 
+The ablation study referenced in Sections~\ref{subsec:multimodal}
+and~\ref{subsec:llm} evaluated three vision models (YOLOv26n-cls,
+ConvNeXt-Tiny~PEFT, DINOv2-Small) crossed with three LLM
+configurations (none, Gemma~4 2B, Gemini~3~Flash). Two configurations
+were excluded from the final reported numbers: a Llama3-based
+configuration was excluded for label-echo behaviour described below,
+and Gemma~4~2B was excluded after empirical failure also described
+below. Final reported numbers use \textbf{Gemini~3~Flash} for the LLM
+audit layer.
+ 
+\paragraph{Test set construction.} The evaluation was restricted to the
+40 dangerous species listed in Appendix~\ref{app:species},
+Table~\ref{tab:dangerous-species}, sampled at up to 20 images per class
+from the held-out test split (\texttt{data/dataset\_split/test/}) at
+seed~42. The full sampled pool yields up to 800 images; the partial run
+reported in this paper covers $n=245$ images. A full 800-image run is
+identified as future work, particularly for stable estimates of
+high-confidence misclassification recall (Metric~2).
+ 
+\paragraph{Vision-model inference latency in the ablation harness.}
+On the dangerous-species ablation harness (CPU, batch=1), median
+per-image vision inference times were 15.3\,ms (YOLOv26n-cls),
+30.1\,ms (ConvNeXt-Tiny), and 38.7\,ms (DINOv2-Small). These ablation
+latencies are higher than the deployment-grade timings in
+Table~\ref{tab:full-leaderboard} (e.g.~4.8\,ms for the TFLite f16
+build) because they were measured on the un-exported PyTorch graph
+inside the ablation runner rather than on the production TFLite path.
+Both numbers are reported faithfully in their respective contexts.
+ 
+\paragraph{Llama3 (text-only) — label-echo failure mode.} An initial
+Llama3-based configuration produced an artificially inflated
+$\sim$90\% safety recall in early testing. Inspection of the model's
+verdicts revealed that the audit prompt embeds the toxicity field from
+the context CSV verbatim (e.g.~\texttt{Toxicity:~Deadly}) and instructs
+the LLM to issue a safety warning when a species is toxic. Llama3
+re-read the embedded label and echoed it back as the verdict --- this
+is database-label lookup, not visual or ecological reasoning. The
+model never genuinely engaged with the image content. Llama3 was
+excluded from the final ablation on this basis. As a secondary issue,
+text-only ecological reasoning requires real location/season metadata;
+the ablation harness uses \texttt{Unknown}/\texttt{Unknown} for these
+fields, removing the only signal a text-only LLM could meaningfully
+use.
+ 
+\paragraph{Gemma~4 2B (multimodal) — capability failure mode.} An
+initial \texttt{image\_path} forwarding bug caused Gemma to default to
+\textsc{Agree} on every case (the model never saw the images). After
+the bug was fixed, Gemma's safety recall converged to a value
+statistically indistinguishable from the no-LLM baseline. We attribute
+this to insufficient world knowledge at the 2B-parameter scale: Gemma's
+verbal reasoning was fluent but did not reliably cross-reference visual
+features against the database content for fine-grained mycological
+discrimination. Gemma was excluded from the final ablation on this
+basis.
+ 
+\paragraph{Gemini~3~Flash (deployed configuration).} The deployed
+configuration uses Gemini~3~Flash via the Google API. Production
+deployment is in code as
+\texttt{gemini-3-flash-preview}\footnote{See
+\texttt{config.py}: \texttt{GEMINI\_MODEL = "gemini-3-flash-preview"}.}.
+Median per-request latency is $\sim$500--1500\,ms (vendor-reported);
+this dominates total pipeline latency relative to vision inference.
+ 
+\paragraph{Manual coding protocol for RQ3.} To produce a measured
+LLM-reasoning-consistency rate to fill the \texttt{[TODO]} in
+Section~\ref{subsec:llm}, sample $N=30$ Gemini audit responses
+uniformly at random from the 245-image evaluation. For each response,
+code three binary criteria:
+\begin{enumerate}
+\item Does the response correctly cite the species' ecological context
+      from the database (toxicity, habitat, season, region)?
+\item Does the response reference visual features visible in the image
+      (cap shape/colour, gills, stem, bruising)?
+\item When the LLM disagrees with the vision model, does it justify the
+      disagreement against database content or visual evidence (rather
+      than asserting it without reason)?
+\end{enumerate}
+Report agreement rates as $X/30$, $Y/30$, and $Z/Z_\mathrm{disagree}$.
+Cohen's $\kappa$ may be computed if two coders rate independently.
+ 
+\paragraph{Limitations.} The headline numbers in
+Table~\ref{tab:multimodal} are from $n=245$ rather than the full
+$n=800$. Cell counts for high-confidence misclassification recall are
+small enough (1--7 cases per model) that those values should be read as
+existence-of-effect evidence rather than precise estimates. A full
+800-image rerun is identified as future work, alongside per-class
+recall analysis once the cell counts are sufficient.
+
+
+\section{banking these}
+
+\subsection{Multimodal vs Unimodal Pipeline (RQ2)}\label{subsec:multimodal}
+ 
+To quantify the safety contribution of the LLM audit layer, the pipeline
+was evaluated in two configurations on a stratified sample of $n=245$
+images from 40 dangerous-species classes (Appendix~\ref{app:species},
+Table~\ref{tab:dangerous-species}; sampling protocol seed~42, $\leq 20$
+images/class):
+\begin{itemize}
+\item \textbf{Vision-only}: vision model + 70\% confidence-threshold
+      rule. Predictions below 0.70 confidence auto-flag as
+      \textsc{High}; predictions at or above 0.70 are accepted as the
+      species output.
+\item \textbf{Full pipeline}: vision model + ecological retrieval +
+      Gemini~3 Flash audit + risk engine.
+\end{itemize}
+The primary metric is \textit{safety recall}: the fraction of
+dangerous-species images correctly flagged at \textsc{High} or
+\textsc{Critical} risk.
+ 
+\begin{table}[h]
+\centering
+\caption{Safety recall across pipeline configurations on the
+dangerous-species ablation set ($n=245$, 40 classes, seed 42).}
+\label{tab:multimodal}
+\small
+\begin{tabular}{@{}lccc@{}}
+\hline
+\textbf{Vision Model}  & \textbf{Vision-only} & \textbf{+\,Gemini} & \textbf{Lift} \\
+\hline
+YOLOv26n-cls           & 36.1\%  & \textbf{93.6\%} & +57.5\,pp \\
+ConvNeXt-Tiny (PEFT)   & 20.8\%  & 90.1\%          & +69.3\,pp \\
+DINOv2-Small           & 23.8\%  & 90.1\%          & +66.3\,pp \\
+\hline
+\end{tabular}
+\end{table}
+ 
+Three findings emerge.
+ 
+\textit{First}, the multimodal pipeline produces a +57--69\,pp absolute
+improvement in safety recall regardless of vision model. Removing the
+LLM audit collapses recall by 60--70\,pp uniformly --- the LLM is the
+primary safety mechanism in the pipeline, not an optional add-on.
+ 
+\textit{Second}, the more accurate classifiers (ConvNeXt-Tiny and
+DINOv2-Small) are the most dangerous configurations \emph{without} an
+LLM. Their lower vision-only recall (20.8\%, 23.8\%) reflects systematic
+overconfidence: they almost always predict above the 70\%
+confidence-threshold, so the threshold rule rarely fires as a safety
+net. YOLOv26n-cls's lower confidence on fine-grained predictions trips
+the threshold rule more often, giving it higher vision-only recall
+(36.1\%) despite being the less accurate classifier. In a pipeline
+without language-based reasoning, an accurate but overconfident model
+is therefore less safe than a less accurate but better-calibrated one.
+ 
+\textit{Third}, the LLM lift is largest for the most overconfident
+models (+69.3\,pp ConvNeXt, +66.3\,pp DINOv2): the LLM is doing more
+work where the threshold rule does less.
+ 
+To isolate the LLM's visual contribution from the threshold rule, we
+report a secondary metric: \textit{high-confidence misclassification
+recall} --- cases where the vision model predicted a safe species at
+$\geq 70$\% confidence on a dangerous true class but the LLM correctly
+escalated. Vision-only recall on this metric is 0\% by construction.
+Gemini achieved 85.7\% (6/7) for YOLOv26n-cls and 100\% (1/1) for
+ConvNeXt-Tiny; DINOv2-Small produced zero such cases on the 245-image
+sample. Cell counts are small because high-confidence dangerous
+misidentifications are rare ($<3$\% of the sample). Per-model and
+per-class breakdowns of both metrics are in
+Appendix~\ref{app:ablation}.
+ 
+
+\subsection{Baseline Vision Model Benchmarking}
+Following a review of related work, eight models architectures were initially experimented for evaluation on Github Repository. Due to unnecessary to report all here, three architecturally distinct models were selected for systematic benchmarking: YOLOv26n-cls, ConvNeXt-Tiny, and DINOv2-Small. These three models represent fundamentally different architecture, which is useful when compare the accuracy, inference speed, and deployment suitability across paradigms. After benchmarking, this selected model is integrated into the purpose multimodel pipeline. 
+
+\textbf{YOLOv26n-cls} is a image classification variant of YOLO26 (You Only Look Once) by Ultralytics in early 2026 (Jocher et al., 2023). It is specifically optimized for tasks where an entire image is assigned a single label and confidence score and adopted from the object detection framework by replacing the detection head with a lightweight classification head. The nano variant included minimal parameters count of 1.74 m and was pretrained on  ImageNet 1k. This make the YOLO lightweight and good for production [].
+
+\textbf{ConvNeXt-Tiny }is purely convolutional network intriduced by  Liu et al. (2022), designed by systematically applying design principles from a Vision Transformer Literature to a standard residual network. Key architectural changes include 7×7 depthwise convolutions for a larger per-layer receptive field, an inverted bottleneck structure, LayerNorm in place of BatchNorm, and GELU activations. These changes produce richer spatial feature representations than standard CNNs, with a total parameter count of 28.6M. Pre-trained weights on ImageNet-1k were loaded via torchvision, with the original 1000-class head replaced by a custom head comprising LayerNorm, AdaptiveAvgPool2d, Flatten, Dropout(0.3), and a Linear(768, 169) output layer.
+
+\textbf{DINOv2-Small} is a self-supervised Vision Transformer introduced by Oquab et al. (2023), pre-trained without labels using a self-distillation objective on a curated dataset of 142 million images. Unlike supervised transformers, DINOv2 produces general-purpose visual features that transfer effectively across domains. The ViT-S/14 variant was selected, comprising 22M parameters with a patch size of 14×14 pixels. Pre-trained weights were loaded from the official facebook research hub with a custom classification head appended for the 169 species class. 
+
+\subsection{\textbf{Vision Model Training}}
+
+\subsubsection{Training Conditions}
+All models were trained on the same 169 species dataset using the same 80/10/10 train/validation/test split. It is acknowledge that DINOv2 was trained on an NIVIDIA  A100-SXM4-40GB via Google Colab, while YOLOv26n-cls and ConvNeXt-Tiny were trained locally on an NVIDIA GeForce RTX 4070. Training time comparisons across models should therefore be interpreted with cautions as they reflect different hardware conditions. Accuracy and metrics remains incomparable as they are evaluated on the same test set regarding less of trainings hardware.
+
+\textbf{YOLOv26n-cls} was trained using full fine-tuning across all parameters for 50 epochs with cosine learning rate scheduling and early stopping patience of 10. Following training, the model was exported to TFLite float16 format via the XNNPACK delegate, reducing the Docker image from approximately 1.5 GB to 200 MB while maintaining identical prediction output.
+
+\textbf{ConvNeXt-Tiny} required Parameter-Efficient Fine-Tuning (PEFT) due to its larger parameter count. Full fine-tuning of all 28.6M parameters produced epoch times of approximately 7,278 seconds on the RTX 4070, making 50-epoch training computationally infeasible. A two-phase strategy was adopted: in Phase 1 (epochs 1--10), backbone stages 1--3, the stem, and all downsampling layers were frozen, reducing per-epoch time to approximately 776 seconds — a speedup of 9.4×. In Phase 2 (epochs 11--50), the full backbone was unfrozen with a backbone learning rate of 4e-05 to prevent catastrophic forgetting, while the classifier head retained its Phase 1 rate of 4e-04. Gradient clipping (max\_norm = 1.0) and CosineAnnealingLR were applied throughout both phases.
+
+\textbf{DINOv2-Small } was trained using AdamW with differential learning rates: a backbone rate of 1e-05 and a head rate of 1e-04, implementing a 10× differential to preserve the self-supervised representations during fine-tuning. A warmup phase of 5 epochs preceded cosine decay over the remaining 45 epochs, with a maximum of 50 epochs and early stopping patience of 10. Training terminated at epoch 49.
+
+
+\begin{table}[!t]
+\centering
+\caption{Experimental setup for the three benchmarked architectures. 
+$\dagger$DINOv2 trained on NVIDIA A100-SXM4-40GB via Google Colab; 
+YOLOv26n-cls and ConvNeXt-Tiny trained on NVIDIA GeForce RTX 4070.}
+\label{tab:experiment_setup}
+\resizebox{\columnwidth}{!}{% This line forces it to fit the column width
+\begin{tabular}{llll}
+\hline
+\textbf{Setting} & \textbf{YOLOv26n-cls} & \textbf{ConvNeXt-Tiny} & \textbf{DINOv2-Small$\dagger$} \\
+\hline
+Parameters       & 1.74M         & 28.6M          & 22M \\
+Pretraining      & ImageNet-1k   & ImageNet-1k    & Self-supervised \\
+Framework        & Ultralytics   & torchvision    & facebookresearch hub \\
+Training strategy & Full fine-tune & PEFT two-phase & Full fine-tune \\
+Optimizer        & SGD           & AdamW          & AdamW \\
+Base LR          & 0.01          & 4e-04          & 1e-04 (head) \\
+Backbone LR      & --            & 4e-05 (Phase 2) & 1e-05 \\
+LR schedule      & Cosine        & CosineAnnealingLR & Cosine decay \\
+Warmup epochs    & --            & --             & 5 \\
+Max epochs       & 50            & 50             & 50 \\
+Early stopping   & Patience 10   & Patience 10    & Patience 10 \\
+Batch size       & 16            & 32             & 32 \\
+Input size       & 224$\times$224 & 224$\times$224 & 224$\times$224 \\
+Loss function    & CrossEntropy  & CE + smoothing 0.1 & CE + smoothing 0.1 \\
+Gradient clip    & --            & max\_norm = 1.0 & -- \\
+Dataset split    & 80/10/10      & 80/10/10       & 80/10/10 \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+
+\begin{table}[h]
+\centering
+\caption{Structured output schema produced by the pipeline 
+for each user submission.}
+\label{tab:output_schema}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll p{4.2cm}@{}}
+\hline
+\textbf{Field} & \textbf{Source} & \textbf{Description} \\
+\hline
+Predicted species    & Vision model  & Top-1 species label \\
+Confidence score     & Vision model  & Numerical confidence 0--1 \\
+Toxicity class       & Ecological DB & Edible / Toxic / Deadly \\
+Habitat              & Ecological DB & Known growing environment \\
+Season               & Ecological DB & Active fruiting season \\
+Geographic region    & Ecological DB & Known distribution range \\
+Known lookalikes     & Ecological DB & Visually similar species \\
+Key warnings         & Ecological DB & Species-specific caution notes \\
+LLM reasoning        & LLM audit     & Natural language plausibility assessment \\
+Risk level           & Risk engine   & CRITICAL, HIGH, MODERATE, LOW \\
+Recommendation       & Risk engine   & Plain-language guidance for the user \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+
+% use section* for acknowledgment
+\section*{Acknowledgment}
+
+
+The authors would like to thank...
+
+
+% Can use something like this to put references on a page
+% by themselves when using endfloat and the captionsoff option.
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+
+
+% trigger a \newpage just before the given reference
+% number - used to balance the columns on the last page
+% adjust value as needed - may need to be readjusted if
+% the document is modified later
+%\IEEEtriggeratref{8}
+% The "triggered" command can be changed if desired:
+%\IEEEtriggercmd{\enlargethispage{-5in}}
+
+% references section
+
+% can use a bibliography generated by BibTeX as a .bbl file
+% BibTeX documentation can be easily obtained at:
+% http://mirror.ctan.org/biblio/bibtex/contrib/doc/
+% The IEEEtran BibTeX style support page is at:
+% http://www.michaelshell.org/tex/ieeetran/bibtex/
+%\bibliographystyle{IEEEtran}
+% argument is your BibTeX string definitions and bibliography database(s)
+%\bibliography{IEEEabrv,../bib/paper}
+%
+% <OR> manually copy in the resultant .bbl file
+% set second argument of \begin to the number of references
+% (used to reserve space for the reference number labels box)
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+
+% biography section
+% 
+% If you have an EPS/PDF photo (graphicx package needed) extra braces are
+% needed around the contents of the optional argument to biography to prevent
+% the LaTeX parser from getting confused when it sees the complicated
+% \includegraphics command within an optional argument. (You could create
+% your own custom macro containing the \includegraphics command to make things
+% simpler here.)
+%\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{mshell}}]{Michael Shell}
+% or if you just want to reserve a space for a photo:
+
+\begin{IEEEbiography}{Michael Shell}
+Biography text here.
+\end{IEEEbiography}
+
+
+% if you will not have a photo at all:
+\begin{IEEEbiographynophoto}{John Doe}
+Biography text here.
+\end{IEEEbiographynophoto}
+
+% insert where needed to balance the two columns on the last page with
+% biographies
+%\newpage
+
+\begin{IEEEbiographynophoto}{Jane Doe}
+Biography text here.
+\end{IEEEbiographynophoto}
+
+Sapkota, R., & Karkee, M. (2025). Ultralytics YOLO Evolution: An overview of YOLO26, YOLO11, YOLOV8 and YOLOV5 object detectors for computer vision and pattern recognition. arXiv (Cornell University). https://doi.org/10.48550/arxiv.2510.09653
+
+% You can push biographies down or up by placing
+% a \vfill before or after them. The appropriate
+% use of \vfill depends on what kind of text is
+% on the last page and whether or not the columns
+% are being equalized.
+
+%\vfill
+
+% Can be used to pull up biographies so that the bottom of the last one
+% is flush with the other column.
+%\enlargethispage{-5in}
+
+
+
+% that's all folks
+\end{document}
+
+
