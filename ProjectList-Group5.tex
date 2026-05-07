@@ -703,57 +703,50 @@ Overall, the DF24-Mini result strengthens the main finding from the internal ben
  
  \subsection{\textbf{Ablation Study: Unimodal vs Multimodal (RQ2)}}
 
-Table \ref{tab:ablation_full_results} compares three types of configurations: vision modal, Gemini and multimodal vision with Gemini pipelines. 
+Table \ref{tab:ablation_full_results} compares three types of configurations: unimodal visual baseline, standalone Gemini baseline and multimodal vision with Gemini pipelines. 
 
-\textbf{(1) Vision baseline result.} The results demonstrate that using only vision models were not sufficient for safety critical mushroom identification. YOLOv26n-cls detected 30.0\% of dangerous species, while ConvNeXt-Tiny and DINOv2-Small detected only 14.3\% and 15.3\%, respectively. This means that the vision system missed classification between 70.0\% and 85.7\% of dangerous cases. Although ConvNeXt-Tiny and DINOv2-Small achieved higher classification accuracy in internal benchmark, this did not translate into better safety recall in the fallback setting. This suggests that classification accuracy alone is not sufficient for evaluating a safety-oriented mushroom identification system.
+\textbf{(1) Unimoal vision baseline result.} The results demonstrate that using only vision classification baseline were not sufficient for safety critical mushroom identification. YOLOv26n-cls detected 30.0\% of dangerous cases, while ConvNeXt-Tiny and DINOv2-Small detected only 14.3\% and 15.3\%, respectively. This means that the vision classification baseline system missed most classification between 70.0\% and 85.7\% of dangerous cases. Although ConvNeXt-Tiny and DINOv2-Small achieved higher classification accuracy in internal benchmark, this did not translate into better safety recall in the fallback setting. This means that classification accuracy alone is not sufficient for evaluating a safety-oriented mushroom identification system.
 
 
-\textbf{(2) Gemini baseline result.}
-Gemini LLM operating alone achieved a high safety recall of 92.6\%, meaning it detected most dangerous mushroom species. However, it also incorrectly flagged 70.7\% of safe species as dangerous. In practice, this high flase positive rate proves that using only the to predict mushroom species  was too conservative and impractical in this study.
+\textbf{(2) Gemini without vision input baseline result.} Gemini without vision input achieved a highest safety recall of 92.6\%, meaning it detected most dangerous mushroom cases. However, it also incorrectly flagged 70.7\% of safe cases as dangerous. In practice, this high false positive rate shows that Gemini was too conservative and impractical as a standalone baseline in this study, because excessive false warnings may reduce user trust in the system.
 
-\textbf{(3) Multimodal baseline result.}
-The multimodal configurations provided a better balance between detecting dangerous mushrooms and avoiding the excessive false detection. YOLOv26n-cls with  Gemini achieved 75.9\% safety recall and an F1 score of 80.0\%. ConvNeXt-Tiny with Gemini and DINOv2-Small with Gemini achieved slightly higher F1 scores of 81.2\% and 81.9\%, respectively. The small difference between these results shows that Gemini reduced the performance gap between the lightweight YOLOv26n-cls model and the larger vision models. 
+\textbf{(3) Multimodal result.}
+The multimodal configurations provided a better balance between detecting dangerous mushrooms and avoiding the excessive false detection. YOLOv26n-cls with  Gemini achieved 75.9\% safety recall and an F1 score of 80.0\%. ConvNeXt-Tiny with Gemini and DINOv2-Small with Gemini achieved slightly higher F1 scores of 81.2\% and 81.9\%, respectively. The small difference between these results shows that Gemini audit layer reduced the performance limitation between the lightweight YOLOv26n-cls model and the larger vision models. 
 
 \textbf{(4) Deployment decision.}
-Therefore, the final modal choice was guided by deployment practically rather than focusing solely on the performance. Although, DINOv2-Small with Gemini achieved the highest F1 score, YOLOv26n-cls wth Gemini provided a comparable safety result with a much smaller modal size and fastest speed inference. Since the Gemini API  call slower the overall pipeline latency, therefore YOLOv26n-cls was selected as the most practical deployment model. 
+Therefore, the final modal choice was guided by deployment practically rather than focusing solely on the classification accuracy alone. Although, DINOv2-Small with Gemini achieved the highest F1 score, YOLOv26n-cls wth Gemini provided a comparable safety result with a much smaller modal size and fastest speed inference. YOLOv26n-cls required only 15.3 ms per image in the ablation harness, compared with 30.1 ms for ConvNeXt-Tiny and 38.7 ms for DINOv2-Small. Since the Gemini API  call slower the overall pipeline latency, therefore YOLOv26n-cls was selected as the most practical deployment model in the final multimodal pipeline. 
 
 
+\begin{table}[h]
+\centering
+\caption{Ablation study on 300 images: 203 dangerous cases and 97 safe cases.}
+\label{tab:ablation_full_results}
 
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{tabular}{@{}lccc@{}}
+\hline
+\textbf{Configuration} & \textbf{Safety Recall} & \textbf{FPR} & \textbf{F1 Score} \\
+\hline
+LLM Only (Gemini)      & \textbf{92.6\%} & 70.7\% & 81.6\% \\
+\hline
+YOLOv26n / Gemini      & 75.9\% & 18.6\% & 80.0\% \\
+ConvNeXt-T / Gemini    & 73.4\% & 10.3\% & 81.2\% \\
+DINOv2-S / Gemini      & 74.9\% & 10.3\% & \textbf{81.9\%} \\
+\hline
+YOLOv26n Alone         & 30.0\% & 16.5\% & 44.2\% \\
+DINOv2-S Alone         & 15.3\% & \textbf{0.0\%}  & 26.5\% \\
+ConvNeXt-T Alone       & 14.3\% & \textbf{0.0\%}  & 25.0\% \\
+\hline
+\multicolumn{4}{@{}p{0.95\columnwidth}@{}}{
+\footnotesize *FPR = false positive rate, meaning the percentage of safe images incorrectly flagged as dangerous.
+} \\
+\end{tabular}
+\end{table}
 
  
-\subsection{LLM Reasoning Consistency (RQ3)}\label{subsec:llm}
- 
-RQ3 asks whether the LLM's natural-language reasoning is consistent with
-the structured ecological database content. The 90--94\% safety recall
-in Table~\ref{tab:multimodal} provides indirect evidence: this metric
-requires the LLM verdict to align with the toxicity field of the actual
-species. Two failed configurations on smaller local LLMs further
-illustrate where consistency breaks down.
- 
-\textit{Llama3 (text-only)} produced an artificially inflated
-$\sim$90\% safety recall via a label-echo failure mode: the audit prompt
-includes the toxicity field from the context CSV, and the model re-read
-the label and echoed it back as the verdict rather than reasoning from
-visual or environmental evidence. \textit{Gemma~4 (2B-parameter
-multimodal)} produced recall statistically indistinguishable from the
-no-LLM baseline once an \texttt{image\_path} forwarding bug was fixed;
-the model lacks sufficient world knowledge for fine-grained mycological
-reasoning at 2B parameters. Both configurations were excluded from the
-deployed pipeline. Full failure-mode analysis is in
-Appendix~\ref{app:ablation}.
- 
-\textit{Gemini~3 Flash}, the deployed audit model, produces verdicts
-that engage with both the image and the database content. [TODO: insert
-measured agreement rate from manual coding of $N=30$ random Gemini audit
-responses on (a)~ecological-context citation, (b)~visual-feature
-reference, and (c)~justification of disagreements with the vision
-prediction. Protocol in Appendix~\ref{app:ablation}.]
- 
-The collective finding is that LLM reasoning consistency is a function
-of model capability: frontier-class multimodal models reason from the
-database content, while smaller text-only models pattern-match on its
-labels. The audit layer therefore requires a cloud LLM API regardless
-of how lightweight the local vision model is.
  
  
 \subsection{Output Interpretability (RQ4)}\label{subsec:output}
@@ -812,63 +805,31 @@ strictly more identification-relevant information than the unimodal
 alternative.
  
  
-\subsection{Deployment Result: YOLOv26n-cls}\label{subsec:selected}
- 
-YOLOv26n-cls was selected as the production deployment model despite
-ConvNeXt-Tiny and DINOv2-Small achieving higher Top-1 accuracy. The
-selection is supported by two findings.
-(Table~\ref{tab:deployment}).
- 
-\begin{table}[h]
-\centering
-\caption{Production deployment comparison: YOLOv26n-cls (TFLite f16) vs
-the two higher-accuracy alternatives.}
-\label{tab:deployment}
-\small
-\begin{tabular}{@{}lccc@{}}
-\hline
-\textbf{Factor} & \textbf{YOLOv26n} & \textbf{ConvNeXt-T} & \textbf{DINOv2-S} \\
-                & \textbf{(TFLite)} & \textbf{(PEFT)}     &                   \\
-\hline
-Parameters              & 1.74M           & 28.6M       & 22.0M       \\
-Weight file size        & 3.6 MB          & 110 MB      & 85 MB       \\
-Export format           & TFLite f16      & PyTorch     & PyTorch     \\
-Docker image size       & $\sim$200 MB    & $\sim$1.5 GB & $\sim$1.5 GB \\
-CPU inference           & \textbf{4.8 ms} & 35.6 ms     & --          \\
-Top-1 accuracy          & 88.1\%          & 91.1\%      & 92.8\% \\
-Safety recall (+Gemini) & \textbf{93.6\%} & 90.1\%      & 90.1\%      \\
-\hline
-\end{tabular}
-\end{table}
- 
-\textit{First}, the LLM audit layer adds 57.5\,pp of safety recall to
-YOLOv26n-cls, raising it to 93.6\% --- higher than the +Gemini
-configurations of either ConvNeXt-Tiny or DINOv2-Small (both 90.1\%)
-despite their accuracy advantage. The audit layer compensates for
-YOLOv26n-cls's weaker fine-grained discrimination and overcompensates
-against the larger models' overconfidence; the deployed system's
-end-to-end accuracy floor is set by the LLM, not by the vision model
-alone.
- 
-\textit{Second}, the LLM API call dominates total pipeline latency at
-approximately 500--1500\,ms per request (vendor-reported), so the
-difference between 4.8\,ms TFLite inference and the 30+\,ms PyTorch
-alternatives is negligible end-to-end. The vision-model choice
-therefore reduces to on-device footprint: TFLite YOLOv26n-cls runs in a
-$\sim$200\,MB Cloud Run container with no PyTorch dependency, whereas
-ConvNeXt-Tiny and DINOv2-Small each require a $\sim$1.5\,GB PyTorch
-image. For serverless scale-to-zero deployment, the smaller image
-cold-starts faster and costs less per request.
- 
-The deployed YOLOv26n-cls\,+\,Gemini configuration achieves 93.6\%
-safety recall on dangerous species with the highest end-to-end
-production efficiency among the three benchmarked architectures.
- 
 
 % ---------------- Discussion ----------------
 \section{Discussion}
 
-"Formal user evaluation and large-scale ground truth validation are identified as directions for future work."
+The results show that no single component is sufficient on its own.
+Vision-only models missed 70--86\% of dangerous mushrooms, while Gemini
+alone wrongly flagged 70.7\% of safe species. Only the multimodal
+pipeline produced a usable balance, with F1 scores of 80--82\% across
+all three vision models.
+
+A notable finding is that classification accuracy did not predict safety
+performance. ConvNeXt-Tiny and DINOv2-Small had higher Top-1 accuracy
+than YOLOv26n-cls, but lower vision-only safety recall (14.3\% and
+15.3\% versus 30.0\%), because their higher confidence rarely tripped
+the 70\% threshold rule. In a safety-critical setting, calibration can
+matter more than raw accuracy.
+
+Once the LLM audit layer is added, the three multimodal configurations
+cluster within 2\,pp on F1, so the choice of vision model has only a
+small effect on end-to-end safety. The Gemini API call (500--1500\,ms)
+dominates total latency, making the difference between 4.8\,ms and
+35\,ms vision inference negligible. Deployment footprint becomes the
+deciding factor: TFLite YOLOv26n-cls fits in a $\sim$200\,MB container
+versus $\sim$1.5\,GB for the PyTorch alternatives, which matters for
+serverless scale-to-zero deployment.
 
 % ---------------- Conclusion----------------
 \section{Conclusion}
@@ -1180,23 +1141,7 @@ The primary metric is \textit{safety recall}: the fraction of
 dangerous-species images correctly flagged at \textsc{High} or
 \textsc{Critical} risk.
  
-\begin{table}[h]
-\centering
-\caption{Safety recall across pipeline configurations on the
-dangerous-species ablation set ($n=245$, 40 classes, seed 42).}
-\label{tab:multimodal}
-\small
-\begin{tabular}{@{}lccc@{}}
-\hline
-\textbf{Vision Model}  & \textbf{Vision-only} & \textbf{+\,Gemini} & \textbf{Lift} \\
-\hline
-YOLOv26n-cls           & 36.1\%  & \textbf{93.6\%} & +57.5\,pp \\
-ConvNeXt-Tiny (PEFT)   & 20.8\%  & 90.1\%          & +69.3\,pp \\
-DINOv2-Small           & 23.8\%  & 90.1\%          & +66.3\,pp \\
-\hline
-\end{tabular}
-\end{table}
- 
+
 Three findings emerge.
  
 \textit{First}, the multimodal pipeline produces a +57--69\,pp absolute
