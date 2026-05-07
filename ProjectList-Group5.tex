@@ -611,41 +611,49 @@ The final end-to-end pipeline produces a structured identification report delive
 \section{\textbf{Results and Analysis}}
  
 This section presents the experimental results in relation to the four research questions. First, compares the three selected vision architectures on the internal 169 species test set to evaluate the trade off between classification and deployment efficiently. Second, YOLOv26n-cls is evaluated on the external DF24-Mini benchmark to assess generalization beyond the primary dataset. Third, an ablation study compares vision only, LLM-only and multimodal configurations to measures the contribution of the LLM audit layer. Finally, the structured output schema is analyses to assess whether the proposed system provides more interpretable information than a standard image classification.
+ 
 
- 
- 
 \subsection{\textbf{Internal Baseline Vision Model Benchmarking (RQ1)}}\label{subsec:baseline}
  
-Table~\ref{tab:main-leaderboard} compares the three selected vision models on the held-out 10\% test split of the 169 species mushroom dataset inorder to evaluate which model was most suitable for deployment. 
+Table~\ref{tab:main-leaderboard} compares the three selected vision models on the held-out 10\% test split of the 169 species mushroom dataset, the purpose was to evaluate which model was most suitable for deployment. 
 
-ConvNeXt-Tiny achieved the highest Top-1 accuracy at 91.1\%, showing that a larger CNN-based model can perform better on fine-gained mushroom classification, however this improvement came with a much higher deployment cost with 28.6M parameters and produced a 110 MB model file.
+DINOv2-Small achieved the highest Top-1 accuracy at 92.4\%, indicating that self-supervised vision transformer features were effective for fine gain mushroom classification. ConvNeXt-Tiny achieved Top-1 accuracy at 91.1\%. However these improvement came with a much higher deployment cost, Dinov2-Small contained 22.0M parameters and an 85 MB model file, similarly to ConvNeXt-Tiny contained 28.6 Parameters and produced a 110 MB model file.
 
-YOLOv26n-cls achieved 88.1\% Top-1 accuracy and 98.4\% Top-5 accuracy with fewer parameters at 1.74M and produced a 3.6 MB after converted to TFLite float16 model. DINOv2-Small achieved the score in between them at [VERIFY 92.8\%]. 
+YOLOv26n-cls achieved a lower Top-1 accuracy of 88.1\%, but reach 98.4\% Top-5 accuracy matching the strongest Top-5 among the benchmarked model.
+After converted to TFLite float16 model, it requires fewer parameters only 1.74M parameters and produced a 3.6 MB model file.
 
-Although YOLOv26n-cls Top-1 accuracy was lower than ConvNeXt-Tiny, its Top-5 accuracy was almost the same as the larger models. This means that YOLOv26n-cls often included the correct species among its top predictions, even when the first prediction was not always correct
+Although YOLOv26n-cls Top-1 accuracy was lower than  DINOv2-Small and ConvNeXt-Tiny, its Top-5 accuracy were mearly identical to the larger models. This means that YOLOv26n-cls often included the correct species among its top predictions, even when the first prediction was not always correct.
 
 Based on these results, YOLOv26n-cls was selected as the deployment model because it provided the best trade-off between classification performance, model size, CPU inference speed, and deployment practicality. 
 
-\footnote{Best validation Top-1 recorded at epoch~49 in \texttt{docs/dinov2/results.csv}. Replace with
-held-out test Top-1 if separately measured.}. 
-
-
- 
-\begin{table}[h]
+\begin{table}[t]
 \centering
-\caption{Three benchmarked architectures on the 169-species}
+\caption{Comparison of the three benchmarked architectures}
 \label{tab:main-leaderboard}
 \small
-\begin{tabular}{@{}lcccrr@{}}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{2.8pt}
+\begin{tabular}{lccccc}
 \hline
-\textbf{Model} & \textbf{Top-1} & \textbf{Top-5} & \textbf{Params} & \textbf{Size} & \textbf{CPU (ms)} \\
+\textbf{Model} & \textbf{Top-1} & \textbf{Top-5} & \textbf{Params} & \textbf{Size} & \textbf{CPU} \\
+\noalign{\hrule height 0.9pt}
+ConvNeXt-Tiny        & 91.1 & 98.3 & 28.6M & 110 MB & 35.6 \\
+DINOv2-Small         & \textbf{92.4} & \textbf{98.4} & 22.0M & 85 MB & -- \\
+YOLOv26n-cls f16     & 88.1 & \textbf{98.4} & \textbf{1.74M} & \textbf{3.6 MB} & \textbf{4.8} \\
 \hline
-ConvNeXt-T         & \textbf{91.1\%} & 98.3\% & 28.6M & 110 MB & 35.6 \\
-DINOv2-Small              & [VERIFY 92.8\%] & 98.4\% & 22.0M & 85 MB  & --   \\
-YOLOv26n-cls (TFLite f16) & 88.1\%          & 98.4\% & 1.74M & 3.6 MB & \textbf{4.8} \\
-\hline
+\multicolumn{6}{l}{\footnotesize CPU latency for DINOv2-Small was not measured.} \\
 \end{tabular}
 \end{table}
+
+
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{Top1andTop5Accuracy.png}
+    \caption{Top-1 and Top-5 accuracy trends.}
+    \label{fig:validation-accuracy-trends}
+\end{figure}
+ 
 
 % The Original
 % The deployment-cost ranking diverges sharply from the accuracy ranking.
