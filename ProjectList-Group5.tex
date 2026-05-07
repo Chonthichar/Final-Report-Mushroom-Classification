@@ -104,6 +104,7 @@
 % The documentation is contained in the cite.sty file itself.
 \usepackage{cite}
 \usepackage[colorlinks=true, allcolors=blue, pagebackref=true]{hyperref}
+\usepackage[font=small,labelfont=bf,justification=centering]{caption}
 
 
 
@@ -404,7 +405,7 @@ Chonthichar Soythong\IEEEauthorrefmark{3}~\IEEEmembership{}}
 \begin{abstract}
 
 Traditional automated mushroom identification is primarily a unimodal image classification task, which most systems predicting only species labels and numerical confidence scores from a single image. However, such a single modality approaches, lack of ecological grounding, language based reasoning, and interpretable outputs,limiting their practical utilities in real world contexts, where misidentifying mushroom species can result in severe health consequences. 
-In this study, we proposes a unified multimodal mushroom classification framework centered around a four stage pipeline: (1) computer vision deep learning classification based on models architecture benchmarking, (2) ecological context retrieval, (3) Large Language Model (LLM) audit reasoning, and (4) interpretable output generation. Eight model architectures were evaluated across 169 species and 689,000 images. Among these, YOLOv26n-cls was selected as the deployment model, achieving  88.1\% on Top-1 scores and 98.4\% Top-5 accuracy, with an optimized inference speed of 4.8 ms CPU per image via TFLite export. An ablation study demonstrated that adding a Gemini LLM audit layer raised dangerous species safety recall from 36.1\% to 93.6\% for the deployed model. These results indicate that multimodal pipelines combining vision classification, ecological context, and LLM reasoning produce more informative and interpretable outputs compared to isolated image scoring and supporting more informed identification in real-word contexts. The coding section are available at GitHub and Live on Google Cloud.
+In this study, we proposes a unified multimodal mushroom classification framework centered around a four stage pipeline: (1) computer vision deep learning classification based on models architecture benchmarking, (2) ecological context retrieval, (3) Large Language Model (LLM) audit reasoning, and (4) interpretable output generation. Eight model architectures were evaluated across 169 species and 689,000 images. Among these, YOLOv26n-cls was selected as the deployment model, achieving  88.1\% on Top-1 scores and 98.4\% Top-5 accuracy, with an optimized inference speed of 4.8 ms CPU per image via TFLite export. An ablation study demonstrated that adding a Gemini LLM audit layer raised dangerous species safety recall from 30.0\% to 75.9\%, while reducing the false positive rate to 18.6\%, yielding an F1 score of 80.0\% for the deployed model. These results indicate that multimodal pipelines combining vision classification, ecological context, and LLM reasoning produce more informative and interpretable outputs compared to isolated image scoring and supporting more informed identification in real-word contexts. The coding section are available at GitHub and Live on Google Cloud.
 
 \end{abstract}
 
@@ -533,8 +534,11 @@ Our methodology addresses the four research questions into two main components. 
 
 \subsection{\textbf{Dataset}}
 
-\subsubsection{\textbf{Image Dataset}}
+\subsubsection{\textbf{Mushroom species recognition image dataset}}
 All models were trained and evaluated on a dataset of 169 mushroom species comprising approximately 689,000 images sourced from Kaggle \textit{Mushroom species recognition} \cite{kaggle_mushroom1}. Images were partitioned into an 80/10/10 train/validation/test split, with all models evaluated on the same held-out test set. The classification task was formulated as single-label supervised image classification, where each image is mapped to exactly one species label.
+
+\subsubsection{\textbf{Danish Fungi image dataset}}
+The Danish Fungi dataset was introduced as a fine-grained fungal image-recognition benchmark with expert-verified labels and rich observation metadata, including geographic, habitat, and substrate information\cite{picek2022danishfungi}\cite{picek2025fungitastic}.
 
 \subsubsection{\textbf{Ecological Database}}
 To support multimodal pipeline, ecological metadata was compiled into a structured JSON database containing 12 fields per species, including toxicity classification, habitat, season, geographic region, morphological descriptions, known lookalike species, and foraging guidance. These records were compiled primarily from multiple open-source Wikipedia species articles and the iNaturalist open-access taxonomy database, which were used to verify species names and ecological data\cite{wikipedia_mushroom}\cite{inaturalist_taxa}. It is acknowledged that these records have not been independently verified against primary mycological sources and should therefore be treated as a prototype knowledge base. 
@@ -559,14 +563,16 @@ Table~\ref{tab:output_schema} \label{text:schema_mention}
 
 
 \subsection{\textbf{External Benchmarking using DF24-Mini}} 
-As established during related works, to ensure our system's visual feature-extraction capabilities generalize beyond our Kaggle training set, YOLOv26n-cls was additionally fine-tuned on the Danish Fungi (DF24-Mini) dataset  \cite{picek2022danishfungi} and evaluated against baselines published by Picek et al.\cite{picek2025fungitastic}. 
+As established during related works, to evaluate whether the selected deployment architecture generalizes beyond the primary 169-species Kaggle dataset, YOLOv26n-cls was additionally fine-tuned on the DF24-Mini benchmark\cite{picek2022danishfungi} and compared with published baselines from Danish Fungi 2020 by Picek et al.\cite{picek2025fungitastic}. 
 
-The DF24-Mini dataset contains approximately 36,000 images across 182 species with only 11 species appear in both our primary training set and the DF24-Mini dataset (a $\sim$6\% overlap). This minimal overlap ensures the benchmark serves as a genuine test of morphological feature generalization rather than a re-test of familiar classes. The model was fine-tuned the YOLOv26n-cls model for 37 epochs at a 224$\times$224 resolution to maintain a strict 1:1 comparative methodology with the original Picek et al. baselines \cite{picek2025fungitastic}.
+The DF24-Mini dataset contains approximately 36,000 images across 182 species with only 11 species appear in both our primary training set and the DF24-Mini dataset, roughly 6\% overlap. 
+
+Therefore, this experiment mainly evaluates whether the YOLOv26n-cls architecture can transfer to a different mushroom dataset, rather than simply memorizing familiar classes. The model was fine-tuned the YOLOv26n-cls model for 37 epochs at a 224$\times$224 resolution to maintain a strict 1:1 comparative methodology with the original Picek et al. baselines \cite{picek2025fungitastic}.
 
 \subsection{\textbf{Architecture Ablation Setup: Component Isolation}}
-To rigorously evaluate the contribution of each component in our framework, we conducted a three-way ablation study. The goal was to demonstrate that neither component works effectively in isolation, and that our chosen combination (YOLOv26n-cls paired with Gemini) is the optimal configuration for mobile deployment.
+The ablation study was designed to evaluate whether adding an LLM audit layer improves safety-related decision support compared with using only a vision model and to demonstrate that neither component works effectively in isolation, and that our chosen combination,YOLOv26n-cls paired with Gemini), is the optimal configuration for deployment. 
 
-We curated a specialized test set of 300 images (203 dangerous species, 97 safe species) using a fixed random seed (42) from the held-out test split. We evaluated three conditions:
+The evaluation was performed on test set of 300 images, consisting 203 dangerous mushroom images and 97 safe mushroom images using a fixed random seed (42). Seven configurations were tested: YOLOv26n-cls alone, ConvNeXt-Tiny alone, DINOv2-Small alone, Gemini alone, YOLOv26n-cls + Gemini, ConvNeXt-Tiny + Gemini, and DINOv2-Small + Gemini and divided into three conditions:
 \begin{enumerate}
     \item \textbf{Unimodal Vision:} Relying strictly on the vision architectures alone (YOLOv26n-cls, ConvNeXt-Tiny, DINOv2-Small). A safety warning is triggered automatically only if the model's confidence falls below a 70\% threshold.
     \item \textbf{Unimodal LLM (Gemini Only):} Passing the raw image directly to the Gemini Flash Lite API to assess danger, with no vision model assistance.
@@ -580,7 +586,7 @@ We curated a specialized test set of 300 images (203 dangerous species, 97 safe 
 
 \textbf{2) External Benchmarking} For external validation, YOLOv26n-cls was evaluated on the DF24-Mini benchmark using the same metrics reported in the published baseline: Top-1 and Top-3 accuracy. This allows direct comparison with prior models evaluated on the same benchmark dataset.
 
-\textbf{3) Ablation Setup}: Performance was measured using three metrics: (1) Safety Recall (percentage of dangerous mushrooms correctly flagged), (2) False Positive Rate (percentage of safe mushrooms wrongly flagged as dangerous), (3) and the F1 Score (the harmonic mean of precision and recall, serving as our primary balancing metric). Smaller local models (Llama 3.2 and Gemma 4) were initially tested but excluded due to fundamental reasoning failures at their parameter scales.
+\textbf{3) Ablation Study}: Performance was measured using three metrics: (1) Safety Recall (percentage of dangerous mushrooms correctly flagged), (2) False Positive Rate (percentage of safe mushrooms wrongly flagged as dangerous), (3) and the F1 Score (the harmonic mean of precision and recall, serving as our primary balancing metric. Smaller local models (Llama 3.2 and Gemma 4) were initially tested but excluded due to fundamental reasoning failures at their parameter scales.
 
 
 \subsection{\textbf{Multimodal Pipeline Design}}
@@ -617,14 +623,17 @@ This section presents the experimental results in relation to the four research 
  
 Table~\ref{tab:main-leaderboard} compares the three selected vision models on the held-out 10\% test split of the 169 species mushroom dataset, the purpose was to evaluate which model was most suitable for deployment. 
 
-DINOv2-Small achieved the highest Top-1 accuracy at 92.4\%, indicating that self-supervised vision transformer features were effective for fine gain mushroom classification. ConvNeXt-Tiny achieved Top-1 accuracy at 91.1\%. However these improvement came with a much higher deployment cost, Dinov2-Small contained 22.0M parameters and an 85 MB model file, similarly to ConvNeXt-Tiny contained 28.6 Parameters and produced a 110 MB model file.
+DINOv2-Small achieved the highest Top-1 accuracy at 92.4\%, indicating that self-supervised vision transformer features were effective for fine gain mushroom classification. ConvNeXt-Tiny also performed strongly with Top-1 accuracy at 91.1\%. However these improvement came with a much higher deployment resources. Dinov2-Small contained 22.0M parameters and an 85 MB model file and ConvNeXt-Tiny contained 28.6 Parameters and produced a 110 MB model file.
 
-YOLOv26n-cls achieved a lower Top-1 accuracy of 88.1\%, but reach 98.4\% Top-5 accuracy matching the strongest Top-5 among the benchmarked model.
-After converted to TFLite float16 model, it requires fewer parameters only 1.74M parameters and produced a 3.6 MB model file.
+YOLOv26n-cls achieved a lower Top-1 accuracy of 88.1\%, but reach 98.4\% Top-5 accuracy matching the strongest Top-5 performance among the benchmarked models.
 
-Although YOLOv26n-cls Top-1 accuracy was lower than  DINOv2-Small and ConvNeXt-Tiny, its Top-5 accuracy were mearly identical to the larger models. This means that YOLOv26n-cls often included the correct species among its top predictions, even when the first prediction was not always correct.
+Although YOLOv26n-cls Top-1 accuracy was lower than  DINOv2-Small and ConvNeXt-Tiny, its Top-5 accuracy were nearly identical to the larger models. This means that YOLOv26n-cls often included the correct species among its top predictions, even when the first prediction was not always correct. In addition, after converted to TFLite float16 model, YOLOv26n-cls was much smaller and faster, with only  only 1.74M parameters and produced a 3.6 MB model file and CPU inference time at 4.8 ms.
 
-Based on these results, YOLOv26n-cls was selected as the deployment model because it provided the best trade-off between classification performance, model size, CPU inference speed, and deployment practicality. 
+Therefore, YOLOv26n-cls was selected as the deployment model because it provided the best trade-off between classification performance, model size, speed, and deployment practicality. 
+
+The full eight model benchmark, including
+EfficientNet-B0, YOLOv8n-cls, and the TaxonomicYOLO26 dual-head experiment,is reported in Appendix~\ref{app:full-bench}, Table~\ref{tab:full-leaderboard}.
+
 
 \begin{table}[t]
 \centering
@@ -641,10 +650,9 @@ ConvNeXt-Tiny        & 91.1 & 98.3 & 28.6M & 110 MB & 35.6 \\
 DINOv2-Small         & \textbf{92.4} & \textbf{98.4} & 22.0M & 85 MB & -- \\
 YOLOv26n-cls f16     & 88.1 & \textbf{98.4} & \textbf{1.74M} & \textbf{3.6 MB} & \textbf{4.8} \\
 \hline
-\multicolumn{6}{l}{\footnotesize CPU latency for DINOv2-Small was not measured.} \\
+\multicolumn{6}{l}{\footnotesize *CPU latency for DINOv2-Small was not measured.} \\
 \end{tabular}
 \end{table}
-
 
 
 \begin{figure}[t]
@@ -654,100 +662,63 @@ YOLOv26n-cls f16     & 88.1 & \textbf{98.4} & \textbf{1.74M} & \textbf{3.6 MB} &
     \label{fig:validation-accuracy-trends}
 \end{figure}
  
-
-% The Original
-% The deployment-cost ranking diverges sharply from the accuracy ranking.
-% After float16 TFLite export, YOLOv26n-cls reaches 88.1\% Top-1 at
-% 1.74\,M parameters, 3.6\,MB of weights, and 4.8\,ms CPU inference --- a
-% $13\times$ reduction in parameter count, $24\times$ reduction in file
-% size, and $7.4\times$ CPU speedup relative to ConvNeXt-Tiny~(PEFT) for a
-% 3.0\,pp accuracy cost. The CPU speedup originates from TFLite's XNNPACK
-% delegate, which contains hand-optimised CPU kernels for the operations
-% in the YOLOv26 graph; PyTorch's CPU runtime for ConvNeXt-Tiny does not
-% benefit from this level of operator-level optimisation despite
-% ConvNeXt's heavy use of depthwise convolutions. Implications for
-% production deployment are addressed in Section~\ref{subsec:selected}.
-
-The full 8 model including
-EfficientNet-B0, YOLOv8n-cls, and the TaxonomicYOLO26 dual-head
-experiment,is reported in Appendix~\ref{app:full-bench},
-Table~\ref{tab:full-leaderboard}.
  
-\subsection{External Benchmark: DF24-Mini (RQ1)}\label{subsec:df24}
+\subsection{\textbf{External Benchmark: DF24-Mini (RQ1)}}\label{subsec:df24}
  
-To validate that the deployed architecture generalises beyond the custom
-169-species training set, YOLOv26n-cls was fine-tuned on the Danish
-Fungi DF24-Mini training split and evaluated on the held-out public test
-split~\cite{picek2022danishfungi}. The DF24-Mini species list overlaps with our primary
-training set on only 11 of 182 classes ($\sim$6\%), so the benchmark
-tests morphological generalisation rather than re-testing familiar
-classes. Table~\ref{tab:df24-main} reports our YOLOv26n-cls result
-alongside the five published baselines.
+Table~\ref{tab:df24-main} compares YOLOv26n-cls with published DF24-Mini benchmark baselines. We aim to evaluate whether the selected deployment architecture could remain competitive on an external fungi classification benchmark.
  
 \begin{table}[h]
 \centering
-\caption{DF24-Mini benchmark results (224$\times$224). Baselines from
-Picek et al.~\cite{picek2022danishfungi}; our result evaluated at epoch~37.}
+\caption{DF24-Mini benchmark results. Baselines are from
+Picek et al.~\cite{picek2022danishfungi}; our result was evaluated at epoch~37.}
 \label{tab:df24-main}
+
 \small
-\begin{tabular}{@{}lrcc@{}}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+
+\begin{tabular}{@{}lccc@{}}
 \hline
 \textbf{Model} & \textbf{Params} & \textbf{Top-1} & \textbf{Top-3} \\
 \hline
-ViT-Large/16              & 307M  & 67.52\% & 84.46\% \\
-ViT-Base/16               & 86M   & 65.33\% & 82.44\% \\
-SE-ResNeXt-101            & 49M   & 62.42\% & 80.71\% \\
+ViT-Large/16                 & 307M  & 67.52\% & 84.46\% \\
+ViT-Base/16                  & 86M   & 65.33\% & 82.44\% \\
+SE-ResNeXt-101               & 49M   & 62.42\% & 80.71\% \\
 \textbf{YOLOv26n-cls (Ours)} & \textbf{1.74M} & \textbf{60.17\%} & \textbf{78.93\%} \\
-EfficientNet-B3           & 12M   & 59.31\% & 78.79\% \\
-EfficientNet-B0           & 5.3M  & 58.58\% & 77.01\% \\
+EfficientNet-B3              & 12M   & 59.31\% & 78.79\% \\
+EfficientNet-B0              & 5.3M  & 58.58\% & 77.01\% \\
 \hline
+\multicolumn{4}{@{}p{0.95\linewidth}@{}}{
+\footnotesize *The DF24-Mini benchmark was performed only on YOLOv26n-cls. Therefore, external benchmarking of ConvNeXt-Tiny and DINOv2-Small is left for future work.
+} \\
 \end{tabular}
 \end{table}
  
-YOLOv26n-cls outperformed both EfficientNet baselines on Top-1 and
-Top-3 with a parameter budget 3--7$\times$ smaller, and trailed the
-larger ViT and SE-ResNeXt-101 architectures by a margin consistent with
-their roughly 30--170$\times$ greater parameter count. We interpret this
-as external validation that the YOLOv26n classification head extracts
-generalisable morphological features rather than memorising the primary
-training distribution. The DF24-Mini benchmark was performed only on
-YOLOv26n-cls; reproducing it on ConvNeXt-Tiny and DINOv2-Small is left
-for future work.
+YOLOv26n-cls achieved stronger Top-1 and Top-3 performance than both EfficientNet baselines, regardless of using much smaller parameters budget. However, it remained below the larger ViT-Large, ViT-Base, and SE-ResNeXt-101 models, which is expected because those models have substantially higher parameter budgets. 
+
+Therefore, the external benchmaek does not show that YOLOv26n-cls is the most accurate model overall, but it supports its suitability as a deployment model, while remaining much smaller and more efficient than the highest performing baselines.  
+
+Overall, the DF24-Mini result strengthens the main finding from the internal benchmark. Its provides a practical trade off between accuracy and  deployment cost, making it suitable for the final multimodal pipeline.
+
  
- \subsection{\textbf{Multimodal vs Unimodal Ablation (RQ2)}}
+ \subsection{\textbf{Ablation Study: Unimodal vs Multimodal (RQ2)}}
 
-The ablation study yielded several critical findings regarding system safety and component synergy, detailed in Table \ref{tab:ablation_full_results}.
+Table \ref{tab:ablation_full_results} compares three types of configurations: vision modal, Gemini and multimodal vision with Gemini pipelines. 
 
-\textbf{Neither component works well alone.} Vision models on their own missed between 70\% and 85\% of dangerous species. Conversely, while the Gemini LLM operating alone achieved a high safety recall of 92.6\%, it incorrectly flagged 70.7\% of safe species as dangerous. In practice, this level of false alarms would condition users to ignore the warnings entirely, rendering the standalone LLM impractical. The combination of both components is what works.
+\textbf{(1) Vision baseline result.} The results demonstrate that using only vision models were not sufficient for safety critical mushroom identification. YOLOv26n-cls detected 30.0\% of dangerous species, while ConvNeXt-Tiny and DINOv2-Small detected only 14.3\% and 15.3\%, respectively. This means that the vision system missed classification between 70.0\% and 85.7\% of dangerous cases. Although ConvNeXt-Tiny and DINOv2-Small achieved higher classification accuracy in internal benchmark, this did not translate into better safety recall in the fallback setting. This suggests that classification accuracy alone is not sufficient for evaluating a safety-oriented mushroom identification system.
 
-\textbf{Vision model accuracy does not equal fallback safety.} If network connectivity fails, the application must fall back to the vision model alone. Under these unimodal conditions, the highly accurate ConvNeXt and DINOv2 models are the most dangerous fallback options, catching only 14.3\% and 15.3\% of dangerous species, respectively. This is caused by an overconfidence trap: they almost always generate a high-confidence prediction, meaning our automatic low-confidence warning (<70\%) rarely triggers. YOLOv26n-cls, being less certain on average, triggers the safety threshold more frequently, catching 30.0\% of dangerous species on its own. A highly accurate but overconfident model is the most dangerous fallback because it provides the user with a confident wrong answer and no warning.
 
-\textbf{Synergy normalizes performance.} Once the Gemini auditor is introduced, the safety gap between the vision architectures closes. All three Multimodal configurations achieved F1 scores within an exceptionally tight margin (80.0\% to 81.9\%). Adding Gemini effectively bridges the gap between a lightweight, inexpensive model and a massive, computationally expensive one.
+\textbf{(2) Gemini baseline result.}
+Gemini LLM operating alone achieved a high safety recall of 92.6\%, meaning it detected most dangerous mushroom species. However, it also incorrectly flagged 70.7\% of safe species as dangerous. In practice, this high flase positive rate proves that using only the to predict mushroom species  was too conservative and impractical in this study.
 
-\begin{table}[h]
-\centering
-\caption{Ablation Study Results: Safety Recall, False Positive Rate (FPR), and F1 Score on 300 Images.}
-\label{tab:ablation_full_results}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}lccc@{}}
-\hline
-\textbf{Configuration} & \textbf{Safety Recall} & \textbf{FPR (Safe wrongly flagged)} & \textbf{F1 Score} \\
-\hline
-LLM Only (Gemini)      & \textbf{92.6\%} & 70.7\% & 81.6\% \\
-\hline
-YOLOv26n + Gemini      & 75.9\% & 18.6\% & 80.0\% \\
-ConvNeXt-T + Gemini    & 73.4\% & 10.3\% & 81.2\% \\
-DINOv2-S + Gemini      & 74.9\% & 10.3\% & \textbf{81.9\%} \\
-\hline
-YOLOv26n Alone         & 30.0\% & 16.5\% & 44.2\% \\
-DINOv2-S Alone         & 15.3\% & \textbf{0.0\%}  & 26.5\% \\
-ConvNeXt-T Alone       & 14.3\% & \textbf{0.0\%}  & 25.0\% \\
-\hline
-\end{tabular}%
-}
-\end{table}
+\textbf{(3) Multimodal baseline result.}
+The multimodal configurations provided a better balance between detecting dangerous mushrooms and avoiding the excessive false detection. YOLOv26n-cls with  Gemini achieved 75.9\% safety recall and an F1 score of 80.0\%. ConvNeXt-Tiny with Gemini and DINOv2-Small with Gemini achieved slightly higher F1 scores of 81.2\% and 81.9\%, respectively. The small difference between these results shows that Gemini reduced the performance gap between the lightweight YOLOv26n-cls model and the larger vision models. 
 
-Consequently, the selection of the vision architecture is not fundamentally a safety decision, but a practical deployment decision. While ConvNeXt and DINOv2 require GPUs to achieve acceptable latencies, YOLOv26n-cls operates at 15 ms on a CPU with a 1.74M parameter footprint. Because the Gemini API request dominates the overall pipeline latency (500--1500 ms), the YOLO + Gemini configuration emerges as the unequivocal choice for edge deployment.
+\textbf{(4) Deployment decision.}
+Therefore, the final modal choice was guided by deployment practically rather than focusing solely on the performance. Although, DINOv2-Small with Gemini achieved the highest F1 score, YOLOv26n-cls wth Gemini provided a comparable safety result with a much smaller modal size and fastest speed inference. Since the Gemini API  call slower the overall pipeline latency, therefore YOLOv26n-cls was selected as the most practical deployment model. 
+
+
+
 
  
 \subsection{LLM Reasoning Consistency (RQ3)}\label{subsec:llm}
@@ -864,7 +835,7 @@ Weight file size        & 3.6 MB          & 110 MB      & 85 MB       \\
 Export format           & TFLite f16      & PyTorch     & PyTorch     \\
 Docker image size       & $\sim$200 MB    & $\sim$1.5 GB & $\sim$1.5 GB \\
 CPU inference           & \textbf{4.8 ms} & 35.6 ms     & --          \\
-Top-1 accuracy          & 88.1\%          & 91.1\%      & [VERIFY 92.8\%] \\
+Top-1 accuracy          & 88.1\%          & 91.1\%      & 92.8\% \\
 Safety recall (+Gemini) & \textbf{93.6\%} & 90.1\%      & 90.1\%      \\
 \hline
 \end{tabular}
@@ -1031,7 +1002,7 @@ passes; the TFLite f16 row uses the XNNPACK delegate.
 \textbf{Model} & \textbf{Top-1} & \textbf{Top-5} & \textbf{Params}
 & \textbf{Size} & \textbf{GPU (ms)} & \textbf{CPU (ms)} & \textbf{Notes} \\
 \hline
-DINOv2-Small               & [VERIFY 92.8\%] & [VERIFY 98.4\%] & 22.0M & 85 MB    & --   & --   & Self-supervised ViT, accuracy leader \\
+DINOv2-Small               & 92.8\%          & 98.4\%          & 22.0M & 85 MB    & --   & --   & Self-supervised ViT, accuracy leader \\
 ConvNeXt-Tiny (PEFT)       & 91.1\%          & 98.3\%          & 28.6M & 110 MB   & 7.6  & 35.6 & Modern CNN, PEFT two-phase           \\
 EfficientNet-B0            & 89.5\%          & 97.9\%          & 5.3M  & 17.2 MB  & 11.6 & 19.2 & Classification-native CNN            \\
 YOLOv26n-cls (PyTorch)     & 88.1\%          & 98.4\%          & 1.74M & 3.6 MB   & 6.3  & 7.1  & Production source                    \\
