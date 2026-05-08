@@ -149,7 +149,8 @@
 % You can find documentation about the pdfTeX application at:
 % http://www.tug.org/applications/pdftex
 
-
+\usepackage{amssymb}   % make sure this is in your preamble
+\usepackage{booktabs}  % optional but cleaner rules
 \usepackage{graphicx}
 
 % *** MATH PACKAGES ***
@@ -403,10 +404,26 @@ Chonthichar Soythong\IEEEauthorrefmark{3}~\IEEEmembership{}}
 % in the abstract or keywords.
 \IEEEtitleabstractindextext{%
 \begin{abstract}
-
-Traditional automated mushroom identification is primarily a unimodal image classification task, which most systems predicting only species labels and numerical confidence scores from a single image. However, such a single modality approaches, lack of ecological grounding, language based reasoning, and interpretable outputs,limiting their practical utilities in real world contexts, where misidentifying mushroom species can result in severe health consequences. 
-In this study, we proposes a unified multimodal mushroom classification framework centered around a four stage pipeline: (1) computer vision deep learning classification based on models architecture benchmarking, (2) ecological context retrieval, (3) Large Language Model (LLM) audit reasoning, and (4) interpretable output generation. Eight model architectures were evaluated across 169 species and 689,000 images. Among these, YOLOv26n-cls was selected as the deployment model, achieving  88.1\% on Top-1 scores and 98.4\% Top-5 accuracy, with an optimized inference speed of 4.8 ms CPU per image via TFLite export. An ablation study demonstrated that adding a Gemini LLM audit layer raised dangerous species safety recall from 30.0\% to 75.9\%, while reducing the false positive rate to 18.6\%, yielding an F1 score of 80.0\% for the deployed model. These results indicate that multimodal pipelines combining vision classification, ecological context, and LLM reasoning produce more informative and interpretable outputs compared to isolated image scoring and supporting more informed identification in real-word contexts. The coding section are available at GitHub and Live on Google Cloud.
-
+Traditional automated mushroom identification is a unimodal image
+classification task, where most systems predict only species labels
+and confidence scores from a single image. Such single-modality
+approaches lack ecological grounding, language-based reasoning, and
+interpretable outputs, limiting their use in real-world contexts where
+misidentification can result in severe health consequences. In this
+study, we propose a unified multimodal mushroom classification
+framework based on a four-stage pipeline: (1) computer vision
+classification, (2) ecological context retrieval, (3) Large Language
+Model (LLM) audit reasoning, and (4) interpretable output generation.
+Eight model architectures were evaluated across 169 species and
+689,000 images. YOLOv26n-cls was selected as the deployment model,
+achieving 88.1\% Top-1 and 98.4\% Top-5 accuracy with 4.8\,ms CPU
+inference via TFLite export. An ablation study showed that adding a
+Gemini LLM audit layer raised dangerous-species safety recall from
+30.0\% to 75.9\%, with a false positive rate of 18.6\% and an F1
+score of 80.0\%. These results indicate that combining vision
+classification, ecological context, and LLM reasoning produces more
+informative and interpretable outputs than image scoring alone. Code
+is available on GitHub and the system is deployed on Google Cloud.
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
@@ -502,8 +519,6 @@ This study addresses the following four research questions corresponding directl
 
 \item \textbf{A systematic architecture benchmark.} -We provide a systematic benchmark of YOLOv26n-cls, ConvNeXt-Tiny and DINOv2, evaluated across 169 species under production deployment conditions. 
 
-\item \textbf{An LLM audit layer for visual verification.} The system applied an LLM audit layer that receives the input image, the vision prediction, and the ecological context record, and generate natural language reasoning for classification decisions, identify the prediction if it is plausible and the case where the vision model should not be trusted.
-
 \item \textbf{An interpretable output schema.} We introduce output schema designed, including confidence levels, ecological notes, and identification guidance for real-word foraging contexts. 
 \end{enumerate}
 
@@ -586,7 +601,7 @@ The evaluation was performed on test set of 300 images, consisting 203 dangerous
 
 \textbf{2) External Benchmarking} For external validation, YOLOv26n-cls was evaluated on the DF24-Mini benchmark using the same metrics reported in the published baseline: Top-1 and Top-3 accuracy. This allows direct comparison with prior models evaluated on the same benchmark dataset.
 
-\textbf{3) Ablation Study}: Performance was measured using three metrics: (1) Safety Recall (percentage of dangerous mushrooms correctly flagged), (2) False Positive Rate (percentage of safe mushrooms wrongly flagged as dangerous), (3) and the F1 Score (the harmonic mean of precision and recall, serving as our primary balancing metric. Smaller local models (Llama 3.2 and Gemma 4) were initially tested but excluded due to fundamental reasoning failures at their parameter scales.
+\textbf{3) Ablation Study}: Performance was measured using three metrics: (1) Safety Recall (percentage of dangerous mushrooms correctly flagged), (2) False Positive Rate (percentage of safe mushrooms wrongly flagged as dangerous), (3) and the F1 Score (the harmonic mean of precision and recall, serving as our primary balancing metric. Smaller local models (Llama 3.2 and Gemma 4) were initially tested but excluded due to fundamental reasoning failures at their parameter scales (see Appendix~\ref{app:ablation})..
 
 
 \subsection{\textbf{Multimodal Pipeline Design}}
@@ -701,20 +716,20 @@ Therefore, the external benchmaek does not show that YOLOv26n-cls is the most ac
 Overall, the DF24-Mini result strengthens the main finding from the internal benchmark. Its provides a practical trade off between accuracy and  deployment cost, making it suitable for the final multimodal pipeline.
 
  
- \subsection{\textbf{Ablation Study: Unimodal vs Multimodal (RQ2)}}
+\subsection{\textbf{Ablation Study: Unimodal vs Multimodal (RQ2)}}\label{subsec:ablation}
 
 Table \ref{tab:ablation_full_results} compares three types of configurations: unimodal visual baseline, standalone Gemini baseline and multimodal vision with Gemini pipelines. 
 
-\textbf{(1) Unimoal vision baseline result.} The results demonstrate that using only vision classification baseline were not sufficient for safety critical mushroom identification. YOLOv26n-cls detected 30.0\% of dangerous cases, while ConvNeXt-Tiny and DINOv2-Small detected only 14.3\% and 15.3\%, respectively. This means that the vision classification baseline system missed most classification between 70.0\% and 85.7\% of dangerous cases. Although ConvNeXt-Tiny and DINOv2-Small achieved higher classification accuracy in internal benchmark, this did not translate into better safety recall in the fallback setting. This means that classification accuracy alone is not sufficient for evaluating a safety-oriented mushroom identification system.
+\textbf{(1) Unimodal vision baseline result.} The results demonstrate that using only vision classification baseline was not sufficient for safety critical mushroom identification. YOLOv26n-cls detected 30.0\% of dangerous cases, while ConvNeXt-Tiny and DINOv2-Small detected only 14.3\% and 15.3\%, respectively. This means that the vision classification baseline system missed most classification between 70.0\% and 85.7\% of dangerous cases. In addition, the 0.0\% false positive rate for DINOv2-Small and ConvNeXt-Tiny shows that these models did not incorrectly flag safe mushroom as dangerous. However, this low false positive rate came at the cost of very low safety recall, meaning that they also failed to flag most dangerous mushrooms. Although ConvNeXt-Tiny and DINOv2-Small achieved higher classification accuracy in the internal benchmark, this did not translate into better safety recall in the fallback setting. This means that classification accuracy alone is not sufficient for evaluating a safety-oriented mushroom identification system. 
 
 
-\textbf{(2) Gemini without vision input baseline result.} Gemini without vision input achieved a highest safety recall of 92.6\%, meaning it detected most dangerous mushroom cases. However, it also incorrectly flagged 70.7\% of safe cases as dangerous. In practice, this high false positive rate shows that Gemini was too conservative and impractical as a standalone baseline in this study, because excessive false warnings may reduce user trust in the system.
+\textbf{(2) Standalone Gemini baseline result.} Gemini without vision input achieved a highest safety recall at 92.6\%, meaning that it detected most dangerous mushroom cases. However, it also incorrectly flagged 70.7\% of safe cases as dangerous. This high false positive rate shows that Gemini was too conservative and impractical as a standalone baseline in this study. In practical use, this means that the model would flags almost every mushroom, including common edible ones as a dangerous species. This excessive false classification may reduce user trust in the system.
 
 \textbf{(3) Multimodal result.}
-The multimodal configurations provided a better balance between detecting dangerous mushrooms and avoiding the excessive false detection. YOLOv26n-cls with  Gemini achieved 75.9\% safety recall and an F1 score of 80.0\%. ConvNeXt-Tiny with Gemini and DINOv2-Small with Gemini achieved slightly higher F1 scores of 81.2\% and 81.9\%, respectively. The small difference between these results shows that Gemini audit layer reduced the performance limitation between the lightweight YOLOv26n-cls model and the larger vision models. 
+The multimodal configurations provided a better balance between classify dangerous mushrooms and avoiding the excessive false detection. YOLOv26n-cls with Gemini achieved 75.9\% safety recall and an F1 score of 80.0\%. ConvNeXt-Tiny with Gemini and DINOv2-Small with Gemini achieved slightly higher F1 scores of 81.2\% and 81.9\%, respectively. The Gemini audit layer reduced the performance gap between the lightweight YOLOv26n-cls model and the larger vision models.
 
 \textbf{(4) Deployment decision.}
-Therefore, the final modal choice was guided by deployment practically rather than focusing solely on the classification accuracy alone. Although, DINOv2-Small with Gemini achieved the highest F1 score, YOLOv26n-cls wth Gemini provided a comparable safety result with a much smaller modal size and fastest speed inference. YOLOv26n-cls required only 15.3 ms per image in the ablation harness, compared with 30.1 ms for ConvNeXt-Tiny and 38.7 ms for DINOv2-Small. Since the Gemini API  call slower the overall pipeline latency, therefore YOLOv26n-cls was selected as the most practical deployment model in the final multimodal pipeline. 
+Therefore, the final modal choice was guided by deployment practically rather than focusing solely on the classification accuracy alone. Although, DINOv2-Small with Gemini achieved the highest F1 score, YOLOv26n-cls wth Gemini provided a comparable safety result with a much smaller modal size and fastest speed inference. In the ablation harness for speed inference during the real time classification, YOLOv26n-cls required only 15.3 ms per image compared with 30.1 ms for ConvNeXt-Tiny and 38.7 ms for DINOv2-Small. Since the Gemini API call already slower the overall pipeline latency, the difference between the vision modesl has less impact on the final user facing response time. Therefore YOLOv26n-cls was selected as the most practical deployment because it provides the best balance between safety performance, inference speed, model size, and deployment feasibility.
 
 
 \begin{table}[h]
@@ -730,15 +745,15 @@ Therefore, the final modal choice was guided by deployment practically rather th
 \hline
 \textbf{Configuration} & \textbf{Safety Recall} & \textbf{FPR} & \textbf{F1 Score} \\
 \hline
-LLM Only (Gemini)      & \textbf{92.6\%} & 70.7\% & 81.6\% \\
+YOLOv26n *standalone         & 30.0\% & 16.5\% & 44.2\% \\
+DINOv2-S *standalone          & 15.3\% & \textbf{0.0\%}  & 26.5\% \\
+ConvNeXt-T *standalone        & 14.3\% & \textbf{0.0\%}  & 25.0\% \\
 \hline
-YOLOv26n / Gemini      & 75.9\% & 18.6\% & 80.0\% \\
-ConvNeXt-T / Gemini    & 73.4\% & 10.3\% & 81.2\% \\
-DINOv2-S / Gemini      & 74.9\% & 10.3\% & \textbf{81.9\%} \\
+Gemini LLM Only       & \textbf{92.6\%} & 70.7\% & 81.6\% \\
 \hline
-YOLOv26n Alone         & 30.0\% & 16.5\% & 44.2\% \\
-DINOv2-S Alone         & 15.3\% & \textbf{0.0\%}  & 26.5\% \\
-ConvNeXt-T Alone       & 14.3\% & \textbf{0.0\%}  & 25.0\% \\
+YOLOv26n-Gemini *(15.3ms)      & 75.9\% & 18.6\% & 80.0\% \\
+ConvNeXt-T-Gemini *(30.1ms)    & 73.4\% & 10.3\% & 81.2\% \\
+DINOv2-S-Gemini *(38.7ms)      & 74.9\% & 10.3\% & \textbf{81.9\%} \\
 \hline
 \multicolumn{4}{@{}p{0.95\columnwidth}@{}}{
 \footnotesize *FPR = false positive rate, meaning the percentage of safe images incorrectly flagged as dangerous.
@@ -747,9 +762,7 @@ ConvNeXt-T Alone       & 14.3\% & \textbf{0.0\%}  & 25.0\% \\
 \end{table}
 
  
- 
- 
-\subsection{Output Interpretability (RQ4)}\label{subsec:output}
+\subsection{Output Interpretability (RQ3)}\label{subsec:output}
  
 To address RQ4, we performed a content analysis comparing the
 information dimensions present in (a)~a typical unimodal classifier
@@ -758,36 +771,54 @@ pipeline (Table~\ref{tab:output-fields}). A standard image classifier
 returns 2 fields. The pipeline's structured report contains 13 fields
 spanning three dimensions: identification (4), ecological grounding
 (5), and risk reasoning (4).
- 
+
 \begin{table}[h]
 \centering
-\caption{Information dimensions: unimodal vs multimodal output.}
-\label{tab:output-fields}
+\caption{Concrete output comparison for a single \textit{Amanita phalloides}
+         image: unimodal classifier versus the full multimodal pipeline.}
+\label{tab:output-comparison}
 \small
-\begin{tabular}{llcc}
+\begin{tabular}{p{1.9cm} p{1.4cm} p{4.0cm}}
 \hline
-\textbf{Dimension} & \textbf{Field} & \textbf{Uni} & \textbf{Multi} \\
+\textbf{Field} & \textbf{Unimodal} & \textbf{Multimodal pipeline} \\
 \hline
-Identification    & Predicted species   & $\checkmark$ & $\checkmark$ \\
-                  & Confidence score    & $\checkmark$ & $\checkmark$ \\
-                  & Toxicity class      & --           & $\checkmark$ \\
-                  & Edibility           & --           & $\checkmark$ \\
+Predicted species  & \textit{A.~phalloides}  & \textit{Amanita phalloides}                       \\[2pt]
+Confidence         & 0.81                    & 0.81                                              \\[2pt]
+Toxicity class     & --                      & Deadly                                            \\[2pt]
+Edibility          & --                      & Fatally poisonous                                 \\[2pt]
+Habitat            & --                      & Deciduous woodland                                \\[2pt]
+Active season      & --                      & Summer-Autumn                                    \\[2pt]
+Region             & --                      & Europe, North America                             \\[2pt]
+Lookalikes         & --                      & \textit{A.~citrina}, \textit{V.~volvacea}         \\[2pt]
+Key warnings       & --                      & Amatoxins; symptoms delayed 6 to 24\,h              \\[2pt]
+LLM verdict        & --                      & DANGER - volva and gills consistent with
+                                                     \textit{A.~phalloides}                         \\[2pt]
+Risk level         & --                      & \textbf{CRITICAL}                                 \\[2pt]
+Recommendation     & --                      & Do not consume. Seek medical advice if ingested.  \\
 \hline
-Ecological        & Habitat             & --           & $\checkmark$ \\
-grounding         & Active season       & --           & $\checkmark$ \\
-                  & Geographic region   & --           & $\checkmark$ \\
-                  & Known lookalikes    & --           & $\checkmark$ \\
-                  & Environment tips    & --           & $\checkmark$ \\
-\hline
-Risk reasoning    & Key warnings        & --           & $\checkmark$ \\
-                  & LLM reasoning       & --           & $\checkmark$ \\
-                  & Risk level          & --           & $\checkmark$ \\
-                  & Recommendation      & --           & $\checkmark$ \\
-\hline
-\textbf{Total}    &                     & \textbf{2}   & \textbf{13}  \\
+\textbf{Total}     & \textbf{2}              & \textbf{13}                                       \\
 \hline
 \end{tabular}
 \end{table}
+
+% --------------------------------------------------
+% FIGURE: App screenshot (swap in your real image)
+% --------------------------------------------------
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=0.82\linewidth]{app_screenshot.png}
+    \caption{Gradio web interface output for a single \textit{Agaricus xanthodermus}
+             photograph submitted with location (United Kingdom) and season (Winter).
+             The pipeline returns a \textbf{HIGH} risk level driven by three compounding
+             factors: low vision confidence (27.7\%, below the 0.70 threshold),
+             a context mismatch flagged by the LLM audit (Winter does not match the
+             species' known Late summer--Autumn season), and a Toxic toxicity class.
+             The LLM verdict of \textsc{Suspicious} and the plain-language
+             recommendation (\emph{Do not consume}) demonstrate the eleven
+             information dimensions absent from a unimodal confidence score alone.}
+    \label{fig:app-output}
+\end{figure*}
+
  
 The multimodal output adds eleven information dimensions absent from a
 confidence score. Three of these (LLM reasoning, risk level,
@@ -899,7 +930,7 @@ Begin your response with "AGREE", "DISAGREE", or "DANGER", then give your field 
 
 The ablation evaluation was restricted to the 40 species below, selected from the held-out test split (\texttt{data/dataset\_split/test/}) on the basis that their toxicity classification contains at least one of the following keywords: Deadly, Highly Toxic, Toxic, Hallucinogenic, or Pathogenic. Up to 20 images per species were sampled (seed 42), yielding a maximum of 800 images. The partial evaluation reported in this paper used 245 images across these 40 classes.
 
-\section{ape}
+\section{Dangerous Species List}
 \begin{table}[h]
 \centering
 \caption{Ablation Study Test Set: 40 Dangerous Species}
@@ -1029,37 +1060,12 @@ experiment was discontinued; future work could revisit dual-head
 training with a per-task adapter rather than a fully shared backbone.
  
  
-\section{LLM Ablation Study Details}\label{app:ablation}
- 
-The ablation study referenced in Sections~\ref{subsec:multimodal}
-and~\ref{subsec:llm} evaluated three vision models (YOLOv26n-cls,
-ConvNeXt-Tiny~PEFT, DINOv2-Small) crossed with three LLM
-configurations (none, Gemma~4 2B, Gemini~3~Flash). Two configurations
-were excluded from the final reported numbers: a Llama3-based
-configuration was excluded for label-echo behaviour described below,
-and Gemma~4~2B was excluded after empirical failure also described
-below. Final reported numbers use \textbf{Gemini~3~Flash} for the LLM
-audit layer.
- 
-\paragraph{Test set construction.} The evaluation was restricted to the
-40 dangerous species listed in Appendix~\ref{app:species},
-Table~\ref{tab:dangerous-species}, sampled at up to 20 images per class
-from the held-out test split (\texttt{data/dataset\_split/test/}) at
-seed~42. The full sampled pool yields up to 800 images; the partial run
-reported in this paper covers $n=245$ images. A full 800-image run is
-identified as future work, particularly for stable estimates of
-high-confidence misclassification recall (Metric~2).
- 
-\paragraph{Vision-model inference latency in the ablation harness.}
-On the dangerous-species ablation harness (CPU, batch=1), median
-per-image vision inference times were 15.3\,ms (YOLOv26n-cls),
-30.1\,ms (ConvNeXt-Tiny), and 38.7\,ms (DINOv2-Small). These ablation
-latencies are higher than the deployment-grade timings in
-Table~\ref{tab:full-leaderboard} (e.g.~4.8\,ms for the TFLite f16
-build) because they were measured on the un-exported PyTorch graph
-inside the ablation runner rather than on the production TFLite path.
-Both numbers are reported faithfully in their respective contexts.
- 
+\section{Excluded LLM Configurations}\label{app:ablation}
+
+In addition to Gemini~3~Flash (the deployed audit model), two smaller
+local LLMs were initially tested but excluded from the final ablation
+results due to fundamental reasoning failures at their parameter scales.
+
 \paragraph{Llama3 (text-only) — label-echo failure mode.} An initial
 Llama3-based configuration produced an artificially inflated
 $\sim$90\% safety recall in early testing. Inspection of the model's
@@ -1069,12 +1075,8 @@ the LLM to issue a safety warning when a species is toxic. Llama3
 re-read the embedded label and echoed it back as the verdict --- this
 is database-label lookup, not visual or ecological reasoning. The
 model never genuinely engaged with the image content. Llama3 was
-excluded from the final ablation on this basis. As a secondary issue,
-text-only ecological reasoning requires real location/season metadata;
-the ablation harness uses \texttt{Unknown}/\texttt{Unknown} for these
-fields, removing the only signal a text-only LLM could meaningfully
-use.
- 
+excluded from the final ablation on this basis.
+
 \paragraph{Gemma~4 2B (multimodal) — capability failure mode.} An
 initial \texttt{image\_path} forwarding bug caused Gemma to default to
 \textsc{Agree} on every case (the model never saw the images). After
@@ -1085,177 +1087,6 @@ verbal reasoning was fluent but did not reliably cross-reference visual
 features against the database content for fine-grained mycological
 discrimination. Gemma was excluded from the final ablation on this
 basis.
- 
-\paragraph{Gemini~3~Flash (deployed configuration).} The deployed
-configuration uses Gemini~3~Flash via the Google API. Production
-deployment is in code as
-\texttt{gemini-3-flash-preview}\footnote{See
-\texttt{config.py}: \texttt{GEMINI\_MODEL = "gemini-3-flash-preview"}.}.
-Median per-request latency is $\sim$500--1500\,ms (vendor-reported);
-this dominates total pipeline latency relative to vision inference.
- 
-\paragraph{Manual coding protocol for RQ3.} To produce a measured
-LLM-reasoning-consistency rate to fill the \texttt{[TODO]} in
-Section~\ref{subsec:llm}, sample $N=30$ Gemini audit responses
-uniformly at random from the 245-image evaluation. For each response,
-code three binary criteria:
-\begin{enumerate}
-\item Does the response correctly cite the species' ecological context
-      from the database (toxicity, habitat, season, region)?
-\item Does the response reference visual features visible in the image
-      (cap shape/colour, gills, stem, bruising)?
-\item When the LLM disagrees with the vision model, does it justify the
-      disagreement against database content or visual evidence (rather
-      than asserting it without reason)?
-\end{enumerate}
-Report agreement rates as $X/30$, $Y/30$, and $Z/Z_\mathrm{disagree}$.
-Cohen's $\kappa$ may be computed if two coders rate independently.
- 
-\paragraph{Limitations.} The headline numbers in
-Table~\ref{tab:multimodal} are from $n=245$ rather than the full
-$n=800$. Cell counts for high-confidence misclassification recall are
-small enough (1--7 cases per model) that those values should be read as
-existence-of-effect evidence rather than precise estimates. A full
-800-image rerun is identified as future work, alongside per-class
-recall analysis once the cell counts are sufficient.
-
-
-\section{banking these}
-
-\subsection{Multimodal vs Unimodal Pipeline (RQ2)}\label{subsec:multimodal}
- 
-To quantify the safety contribution of the LLM audit layer, the pipeline
-was evaluated in two configurations on a stratified sample of $n=245$
-images from 40 dangerous-species classes (Appendix~\ref{app:species},
-Table~\ref{tab:dangerous-species}; sampling protocol seed~42, $\leq 20$
-images/class):
-\begin{itemize}
-\item \textbf{Vision-only}: vision model + 70\% confidence-threshold
-      rule. Predictions below 0.70 confidence auto-flag as
-      \textsc{High}; predictions at or above 0.70 are accepted as the
-      species output.
-\item \textbf{Full pipeline}: vision model + ecological retrieval +
-      Gemini~3 Flash audit + risk engine.
-\end{itemize}
-The primary metric is \textit{safety recall}: the fraction of
-dangerous-species images correctly flagged at \textsc{High} or
-\textsc{Critical} risk.
- 
-
-Three findings emerge.
- 
-\textit{First}, the multimodal pipeline produces a +57--69\,pp absolute
-improvement in safety recall regardless of vision model. Removing the
-LLM audit collapses recall by 60--70\,pp uniformly --- the LLM is the
-primary safety mechanism in the pipeline, not an optional add-on.
- 
-\textit{Second}, the more accurate classifiers (ConvNeXt-Tiny and
-DINOv2-Small) are the most dangerous configurations \emph{without} an
-LLM. Their lower vision-only recall (20.8\%, 23.8\%) reflects systematic
-overconfidence: they almost always predict above the 70\%
-confidence-threshold, so the threshold rule rarely fires as a safety
-net. YOLOv26n-cls's lower confidence on fine-grained predictions trips
-the threshold rule more often, giving it higher vision-only recall
-(36.1\%) despite being the less accurate classifier. In a pipeline
-without language-based reasoning, an accurate but overconfident model
-is therefore less safe than a less accurate but better-calibrated one.
- 
-\textit{Third}, the LLM lift is largest for the most overconfident
-models (+69.3\,pp ConvNeXt, +66.3\,pp DINOv2): the LLM is doing more
-work where the threshold rule does less.
- 
-To isolate the LLM's visual contribution from the threshold rule, we
-report a secondary metric: \textit{high-confidence misclassification
-recall} --- cases where the vision model predicted a safe species at
-$\geq 70$\% confidence on a dangerous true class but the LLM correctly
-escalated. Vision-only recall on this metric is 0\% by construction.
-Gemini achieved 85.7\% (6/7) for YOLOv26n-cls and 100\% (1/1) for
-ConvNeXt-Tiny; DINOv2-Small produced zero such cases on the 245-image
-sample. Cell counts are small because high-confidence dangerous
-misidentifications are rare ($<3$\% of the sample). Per-model and
-per-class breakdowns of both metrics are in
-Appendix~\ref{app:ablation}.
- 
-
-\subsection{Baseline Vision Model Benchmarking}
-Following a review of related work, eight models architectures were initially experimented for evaluation on Github Repository. Due to unnecessary to report all here, three architecturally distinct models were selected for systematic benchmarking: YOLOv26n-cls, ConvNeXt-Tiny, and DINOv2-Small. These three models represent fundamentally different architecture, which is useful when compare the accuracy, inference speed, and deployment suitability across paradigms. After benchmarking, this selected model is integrated into the purpose multimodel pipeline. 
-
-\textbf{YOLOv26n-cls} is a image classification variant of YOLO26 (You Only Look Once) by Ultralytics in early 2026 (Jocher et al., 2023). It is specifically optimized for tasks where an entire image is assigned a single label and confidence score and adopted from the object detection framework by replacing the detection head with a lightweight classification head. The nano variant included minimal parameters count of 1.74 m and was pretrained on  ImageNet 1k. This make the YOLO lightweight and good for production [].
-
-\textbf{ConvNeXt-Tiny }is purely convolutional network intriduced by  Liu et al. (2022), designed by systematically applying design principles from a Vision Transformer Literature to a standard residual network. Key architectural changes include 7×7 depthwise convolutions for a larger per-layer receptive field, an inverted bottleneck structure, LayerNorm in place of BatchNorm, and GELU activations. These changes produce richer spatial feature representations than standard CNNs, with a total parameter count of 28.6M. Pre-trained weights on ImageNet-1k were loaded via torchvision, with the original 1000-class head replaced by a custom head comprising LayerNorm, AdaptiveAvgPool2d, Flatten, Dropout(0.3), and a Linear(768, 169) output layer.
-
-\textbf{DINOv2-Small} is a self-supervised Vision Transformer introduced by Oquab et al. (2023), pre-trained without labels using a self-distillation objective on a curated dataset of 142 million images. Unlike supervised transformers, DINOv2 produces general-purpose visual features that transfer effectively across domains. The ViT-S/14 variant was selected, comprising 22M parameters with a patch size of 14×14 pixels. Pre-trained weights were loaded from the official facebook research hub with a custom classification head appended for the 169 species class. 
-
-\subsection{\textbf{Vision Model Training}}
-
-\subsubsection{Training Conditions}
-All models were trained on the same 169 species dataset using the same 80/10/10 train/validation/test split. It is acknowledge that DINOv2 was trained on an NIVIDIA  A100-SXM4-40GB via Google Colab, while YOLOv26n-cls and ConvNeXt-Tiny were trained locally on an NVIDIA GeForce RTX 4070. Training time comparisons across models should therefore be interpreted with cautions as they reflect different hardware conditions. Accuracy and metrics remains incomparable as they are evaluated on the same test set regarding less of trainings hardware.
-
-\textbf{YOLOv26n-cls} was trained using full fine-tuning across all parameters for 50 epochs with cosine learning rate scheduling and early stopping patience of 10. Following training, the model was exported to TFLite float16 format via the XNNPACK delegate, reducing the Docker image from approximately 1.5 GB to 200 MB while maintaining identical prediction output.
-
-\textbf{ConvNeXt-Tiny} required Parameter-Efficient Fine-Tuning (PEFT) due to its larger parameter count. Full fine-tuning of all 28.6M parameters produced epoch times of approximately 7,278 seconds on the RTX 4070, making 50-epoch training computationally infeasible. A two-phase strategy was adopted: in Phase 1 (epochs 1--10), backbone stages 1--3, the stem, and all downsampling layers were frozen, reducing per-epoch time to approximately 776 seconds — a speedup of 9.4×. In Phase 2 (epochs 11--50), the full backbone was unfrozen with a backbone learning rate of 4e-05 to prevent catastrophic forgetting, while the classifier head retained its Phase 1 rate of 4e-04. Gradient clipping (max\_norm = 1.0) and CosineAnnealingLR were applied throughout both phases.
-
-\textbf{DINOv2-Small } was trained using AdamW with differential learning rates: a backbone rate of 1e-05 and a head rate of 1e-04, implementing a 10× differential to preserve the self-supervised representations during fine-tuning. A warmup phase of 5 epochs preceded cosine decay over the remaining 45 epochs, with a maximum of 50 epochs and early stopping patience of 10. Training terminated at epoch 49.
-
-
-\begin{table}[!t]
-\centering
-\caption{Experimental setup for the three benchmarked architectures. 
-$\dagger$DINOv2 trained on NVIDIA A100-SXM4-40GB via Google Colab; 
-YOLOv26n-cls and ConvNeXt-Tiny trained on NVIDIA GeForce RTX 4070.}
-\label{tab:experiment_setup}
-\resizebox{\columnwidth}{!}{% This line forces it to fit the column width
-\begin{tabular}{llll}
-\hline
-\textbf{Setting} & \textbf{YOLOv26n-cls} & \textbf{ConvNeXt-Tiny} & \textbf{DINOv2-Small$\dagger$} \\
-\hline
-Parameters       & 1.74M         & 28.6M          & 22M \\
-Pretraining      & ImageNet-1k   & ImageNet-1k    & Self-supervised \\
-Framework        & Ultralytics   & torchvision    & facebookresearch hub \\
-Training strategy & Full fine-tune & PEFT two-phase & Full fine-tune \\
-Optimizer        & SGD           & AdamW          & AdamW \\
-Base LR          & 0.01          & 4e-04          & 1e-04 (head) \\
-Backbone LR      & --            & 4e-05 (Phase 2) & 1e-05 \\
-LR schedule      & Cosine        & CosineAnnealingLR & Cosine decay \\
-Warmup epochs    & --            & --             & 5 \\
-Max epochs       & 50            & 50             & 50 \\
-Early stopping   & Patience 10   & Patience 10    & Patience 10 \\
-Batch size       & 16            & 32             & 32 \\
-Input size       & 224$\times$224 & 224$\times$224 & 224$\times$224 \\
-Loss function    & CrossEntropy  & CE + smoothing 0.1 & CE + smoothing 0.1 \\
-Gradient clip    & --            & max\_norm = 1.0 & -- \\
-Dataset split    & 80/10/10      & 80/10/10       & 80/10/10 \\
-\hline
-\end{tabular}%
-}
-\end{table}
-
-
-\begin{table}[h]
-\centering
-\caption{Structured output schema produced by the pipeline 
-for each user submission.}
-\label{tab:output_schema}
-\footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}ll p{4.2cm}@{}}
-\hline
-\textbf{Field} & \textbf{Source} & \textbf{Description} \\
-\hline
-Predicted species    & Vision model  & Top-1 species label \\
-Confidence score     & Vision model  & Numerical confidence 0--1 \\
-Toxicity class       & Ecological DB & Edible / Toxic / Deadly \\
-Habitat              & Ecological DB & Known growing environment \\
-Season               & Ecological DB & Active fruiting season \\
-Geographic region    & Ecological DB & Known distribution range \\
-Known lookalikes     & Ecological DB & Visually similar species \\
-Key warnings         & Ecological DB & Species-specific caution notes \\
-LLM reasoning        & LLM audit     & Natural language plausibility assessment \\
-Risk level           & Risk engine   & CRITICAL, HIGH, MODERATE, LOW \\
-Recommendation       & Risk engine   & Plain-language guidance for the user \\
-\hline
-\end{tabular}
-\end{table}
 
 
 
