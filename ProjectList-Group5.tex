@@ -507,9 +507,7 @@ This study addresses the following four research questions corresponding directl
 
 \textbf{{RQ2:}} Does a multimodal pipeline improve the species missclassification compared to single-image classification for visually similar species?
 
-\textbf{{RQ3:}} To what degree are LLM-generated species reasoning outputs consistent with structured ecological database records?
-
-\textbf{{RQ4:}} Does a structured multimodal output schema provide more explainability information than a raw numerical confidence score?
+\textbf{{RQ3:}} Does a structured multimodal output schema provide more explainability information than a raw numerical confidence score?
 
 \subsection{\textbf{Contributions}}
 \textbf{This study makes four original contributions: }
@@ -555,7 +553,7 @@ All models were trained and evaluated on a dataset of 169 mushroom species compr
 \subsubsection{\textbf{Danish Fungi image dataset}}
 The Danish Fungi dataset was introduced as a fine-grained fungal image-recognition benchmark with expert-verified labels and rich observation metadata, including geographic, habitat, and substrate information\cite{picek2022danishfungi}\cite{picek2025fungitastic}.
 
-\subsubsection{\textbf{Ecological Database}}
+\subsubsection{\textbf{Ecological Database}}\label{sec:ecological-db}
 To support multimodal pipeline, ecological metadata was compiled into a structured JSON database containing 12 fields per species, including toxicity classification, habitat, season, geographic region, morphological descriptions, known lookalike species, and foraging guidance. These records were compiled primarily from multiple open-source Wikipedia species articles and the iNaturalist open-access taxonomy database, which were used to verify species names and ecological data\cite{wikipedia_mushroom}\cite{inaturalist_taxa}. It is acknowledged that these records have not been independently verified against primary mycological sources and should therefore be treated as a prototype knowledge base. 
 
 
@@ -631,20 +629,20 @@ The final end-to-end pipeline produces a structured identification report delive
 % ============== RESULTS AND ANALYSIS 
 \section{\textbf{Results and Analysis}}
  
-This section presents the experimental results in relation to the four research questions. First, compares the three selected vision architectures on the internal 169 species test set to evaluate the trade off between classification and deployment efficiently. Second, YOLOv26n-cls is evaluated on the external DF24-Mini benchmark to assess generalization beyond the primary dataset. Third, an ablation study compares vision only, LLM-only and multimodal configurations to measures the contribution of the LLM audit layer. Finally, the structured output schema is analyses to assess whether the proposed system provides more interpretable information than a standard image classification.
+This section presents the experimental results in relation to the research questions. First, compares the three selected vision architectures on the internal 169 species test set to evaluate the trade off between classification and deployment efficiently. Second, YOLOv26n-cls is evaluated on the external DF24-Mini benchmark to assess generalization beyond the primary dataset. Third, an ablation study compares vision only, standalone Gemini baseline and multimodal configurations to measures the contribution of the LLM audit layer to safety-oriented decision suppor. Finally, the structured application output is compared with a standard unimodal classifier output to assess whether the proposed system provides more interpretable information than a standard image classification.
  
 
 \subsection{\textbf{Internal Baseline Vision Model Benchmarking (RQ1)}}\label{subsec:baseline}
  
 Table~\ref{tab:main-leaderboard} compares the three selected vision models on the held-out 10\% test split of the 169 species mushroom dataset, the purpose was to evaluate which model was most suitable for deployment. 
 
-DINOv2-Small achieved the highest Top-1 accuracy at 92.4\%, indicating that self-supervised vision transformer features were effective for fine gain mushroom classification. ConvNeXt-Tiny also performed strongly with Top-1 accuracy at 91.1\%. However these improvement came with a much higher deployment resources. Dinov2-Small contained 22.0M parameters and an 85 MB model file and ConvNeXt-Tiny contained 28.6 Parameters and produced a 110 MB model file.
+DINOv2-Small achieved the highest Top-1 accuracy at 92.4\%, indicating that self-supervised vision transformer features were effective for fine gain mushroom classification. ConvNeXt-Tiny also performed strongly with Top-1 accuracy at 91.1\%. However these improvement required substantially larger deployment resources. Dinov2-Small used 22.0M parameters and an 85 MB model file and ConvNeXt-Tiny contained 28.6 Parameters and produced a 110 MB model file.
 
 YOLOv26n-cls achieved a lower Top-1 accuracy of 88.1\%, but reach 98.4\% Top-5 accuracy matching the strongest Top-5 performance among the benchmarked models.
 
-Although YOLOv26n-cls Top-1 accuracy was lower than  DINOv2-Small and ConvNeXt-Tiny, its Top-5 accuracy were nearly identical to the larger models. This means that YOLOv26n-cls often included the correct species among its top predictions, even when the first prediction was not always correct. In addition, after converted to TFLite float16 model, YOLOv26n-cls was much smaller and faster, with only  only 1.74M parameters and produced a 3.6 MB model file and CPU inference time at 4.8 ms.
+Although YOLOv26n-cls Top-1 accuracy was lower than  DINOv2-Small and ConvNeXt-Tiny, its Top-5 accuracy were nearly identical to the larger models. This means that YOLOv26n-cls often included the correct species among its top predictions, even when the first prediction was not always correct. In addition, after converted to TFLite float16, YOLOv26n-cls was also much smaller and faster, with only 1.74M parameters and produced a 3.6 MB model file and CPU inference time at 4.8 ms.
 
-Therefore, YOLOv26n-cls was selected as the deployment model because it provided the best trade-off between classification performance, model size, speed, and deployment practicality. 
+Therefore, YOLOv26n-cls was selected as the deployment model because it provided the best trade-off between classification performance, model size, inference speed, and deployment practicality. 
 
 The full eight model benchmark, including
 EfficientNet-B0, YOLOv8n-cls, and the TaxonomicYOLO26 dual-head experiment,is reported in Appendix~\ref{app:full-bench}, Table~\ref{tab:full-leaderboard}.
@@ -661,9 +659,9 @@ EfficientNet-B0, YOLOv8n-cls, and the TaxonomicYOLO26 dual-head experiment,is re
 \hline
 \textbf{Model} & \textbf{Top-1} & \textbf{Top-5} & \textbf{Params} & \textbf{Size} & \textbf{CPU} \\
 \noalign{\hrule height 0.9pt}
-ConvNeXt-Tiny        & 91.1 & 98.3 & 28.6M & 110 MB & 35.6 \\
-DINOv2-Small         & \textbf{92.4} & \textbf{98.4} & 22.0M & 85 MB & -- \\
-YOLOv26n-cls f16     & 88.1 & \textbf{98.4} & \textbf{1.74M} & \textbf{3.6 MB} & \textbf{4.8} \\
+ConvNeXt-Tiny        & 91.1 & 98.3 & 28.6M & 110 MB & 35.6ms \\
+DINOv2-Small         & \textbf{92.4} & \textbf{98.4} & 22.0M & 85 MB & 32.2ms \\
+YOLOv26n-cls f16     & 88.1 & \textbf{98.4} & \textbf{1.74M} & \textbf{3.6 MB} & \textbf{4.8ms} \\
 \hline
 \multicolumn{6}{l}{\footnotesize *CPU latency for DINOv2-Small was not measured.} \\
 \end{tabular}
@@ -711,9 +709,9 @@ EfficientNet-B0              & 5.3M  & 58.58\% & 77.01\% \\
  
 YOLOv26n-cls achieved stronger Top-1 and Top-3 performance than both EfficientNet baselines, regardless of using much smaller parameters budget. However, it remained below the larger ViT-Large, ViT-Base, and SE-ResNeXt-101 models, which is expected because those models have substantially higher parameter budgets. 
 
-Therefore, the external benchmaek does not show that YOLOv26n-cls is the most accurate model overall, but it supports its suitability as a deployment model, while remaining much smaller and more efficient than the highest performing baselines.  
+Therefore, the external benchmaek does not show that YOLOv26n-cls is the most accurate model overall. Instead, it supports its suitability as a lightweight deployment model that remain competitive, while requiring  uch smaller parameters than the highest performing published baselines.  
 
-Overall, the DF24-Mini result strengthens the main finding from the internal benchmark. Its provides a practical trade off between accuracy and  deployment cost, making it suitable for the final multimodal pipeline.
+Overall, the DF24-Mini result strengthens the main finding from the internal benchmark. Its provides a practical trade off between accuracy and  deployment cost, making YOLOv26n-cls suitable for the final multimodal pipeline.
 
  
 \subsection{\textbf{Ablation Study: Unimodal vs Multimodal (RQ2)}}\label{subsec:ablation}
@@ -723,13 +721,15 @@ Table \ref{tab:ablation_full_results} compares three types of configurations: un
 \textbf{(1) Unimodal vision baseline result.} The results demonstrate that using only vision classification baseline was not sufficient for safety critical mushroom identification. YOLOv26n-cls detected 30.0\% of dangerous cases, while ConvNeXt-Tiny and DINOv2-Small detected only 14.3\% and 15.3\%, respectively. This means that the vision classification baseline system missed most classification between 70.0\% and 85.7\% of dangerous cases. In addition, the 0.0\% false positive rate for DINOv2-Small and ConvNeXt-Tiny shows that these models did not incorrectly flag safe mushroom as dangerous. However, this low false positive rate came at the cost of very low safety recall, meaning that they also failed to flag most dangerous mushrooms. Although ConvNeXt-Tiny and DINOv2-Small achieved higher classification accuracy in the internal benchmark, this did not translate into better safety recall in the fallback setting. This means that classification accuracy alone is not sufficient for evaluating a safety-oriented mushroom identification system. 
 
 
-\textbf{(2) Standalone Gemini baseline result.} Gemini without vision input achieved a highest safety recall at 92.6\%, meaning that it detected most dangerous mushroom cases. However, it also incorrectly flagged 70.7\% of safe cases as dangerous. This high false positive rate shows that Gemini was too conservative and impractical as a standalone baseline in this study. In practical use, this means that the model would flags almost every mushroom, including common edible ones as a dangerous species. This excessive false classification may reduce user trust in the system.
+\textbf{(2) Standalone Gemini baseline result.} Standalone Gemini baseline achieved a highest safety recall at 92.6\%, meaning that it detected most dangerous mushroom cases. However, it also incorrectly flagged 70.7\% of safe cases as dangerous. This high false positive rate shows that Gemini was too conservative and impractical as a standalone baseline in this study. In practical use, this means that the model would flags almost every mushroom, including common edible ones as a dangerous species.
+
+% This excessive false classification may reduce user trust in the system.
 
 \textbf{(3) Multimodal result.}
 The multimodal configurations provided a better balance between classify dangerous mushrooms and avoiding the excessive false detection. YOLOv26n-cls with Gemini achieved 75.9\% safety recall and an F1 score of 80.0\%. ConvNeXt-Tiny with Gemini and DINOv2-Small with Gemini achieved slightly higher F1 scores of 81.2\% and 81.9\%, respectively. The Gemini audit layer reduced the performance gap between the lightweight YOLOv26n-cls model and the larger vision models.
 
 \textbf{(4) Deployment decision.}
-Therefore, the final modal choice was guided by deployment practically rather than focusing solely on the classification accuracy alone. Although, DINOv2-Small with Gemini achieved the highest F1 score, YOLOv26n-cls wth Gemini provided a comparable safety result with a much smaller modal size and fastest speed inference. In the ablation harness for speed inference during the real time classification, YOLOv26n-cls required only 15.3 ms per image compared with 30.1 ms for ConvNeXt-Tiny and 38.7 ms for DINOv2-Small. Since the Gemini API call already slower the overall pipeline latency, the difference between the vision modesl has less impact on the final user facing response time. Therefore YOLOv26n-cls was selected as the most practical deployment because it provides the best balance between safety performance, inference speed, model size, and deployment feasibility.
+Therefore, the final modal choice was guided by deployment practically rather than focusing solely on the classification accuracy alone. Although, DINOv2-Small with Gemini achieved the highest F1 score, YOLOv26n-cls wth Gemini provided a comparable safety result with a much smaller modal size and fastest speed inference. In the ablation harness, for speed inference during the real time classification, YOLOv26n-cls required only 15.3 ms per image compared with 30.1 ms for ConvNeXt-Tiny and 38.7 ms for DINOv2-Small. Since the Gemini API call already slower the overall pipeline latency, the difference between the vision modesl has less impact on the final user facing response time. Therefore YOLOv26n-cls was selected as the most practical deployment because it provides the best balance between safety performance, inference speed, model size, and deployment feasibility.
 
 
 \begin{table}[h]
@@ -762,41 +762,40 @@ DINOv2-S-Gemini *(38.7ms)      & 74.9\% & 10.3\% & \textbf{81.9\%} \\
 \end{table}
 
  
-\subsection{Output Interpretability (RQ3)}\label{subsec:output}
- 
-To address RQ4, we performed a content analysis comparing the
-information dimensions present in (a)~a typical unimodal classifier
-output and (b)~the structured multimodal output produced by our
-pipeline (Table~\ref{tab:output-fields}). A standard image classifier
-returns 2 fields. The pipeline's structured report contains 13 fields
-spanning three dimensions: identification (4), ecological grounding
-(5), and risk reasoning (4).
+\subsection{\textbf{Comparison of Unimodal and  Multimodal Outputs}}
+
+To address RQ4, we compares the output produced by (a)~a standard unimodal classifier with (b)~the structured output from the proposed multimodal pipeline using YOLOv26n-cls as the vision modal and Gemini as the interpreability. The classification accuracy of these two scenario is evaluated on section C, in this section we focused on the final application output. The pipeline's structured report contains 13 fields including identification, ecological grounding, and risk reasoning, retrieved from the ecological database
+(\texttt{mushroom\_context.json} section~\ref{sec:ecological-db}.
+
+Table~\ref{tab:output-comparison} illustrates this using
+\textit{Amanita phalloides} image. A YOLOv26n-cls unimodal system returns only a predicted species
+name and confidence score of 0.81, providing insufficient data for user. In contrast, the multimodal pipeline additionally returns toxicity class, edibility, habitat, season, geographic region, known lookalikes, key warnings, LLM reasoning, risk level, and a plain-language recommendation. The example at Fig.~\ref{fig:amanita} shows the corresponding live application output and demonstrating how the structured output is presented in the Gradio interface. 
 
 \begin{table}[h]
 \centering
-\caption{Concrete output comparison for a single \textit{Amanita phalloides}
-         image: unimodal classifier versus the full multimodal pipeline.}
+\caption{Output comparison for a single \textit{Amanita phalloides}
+         image: unimodal classifier versus the multimodal pipeline.}
 \label{tab:output-comparison}
-\small
-\begin{tabular}{p{1.9cm} p{1.4cm} p{4.0cm}}
+\normalsize
+\begin{tabular}{p{2.1cm} p{1.6cm} p{4.2cm}}
 \hline
 \textbf{Field} & \textbf{Unimodal} & \textbf{Multimodal pipeline} \\
 \hline
-Predicted species  & \textit{A.~phalloides}  & \textit{Amanita phalloides}                       \\[2pt]
-Confidence         & 0.81                    & 0.81                                              \\[2pt]
-Toxicity class     & --                      & Deadly                                            \\[2pt]
-Edibility          & --                      & Fatally poisonous                                 \\[2pt]
-Habitat            & --                      & Deciduous woodland                                \\[2pt]
-Active season      & --                      & Summer-Autumn                                    \\[2pt]
-Region             & --                      & Europe, North America                             \\[2pt]
-Lookalikes         & --                      & \textit{A.~citrina}, \textit{V.~volvacea}         \\[2pt]
-Key warnings       & --                      & Amatoxins; symptoms delayed 6 to 24\,h              \\[2pt]
-LLM verdict        & --                      & DANGER - volva and gills consistent with
-                                                     \textit{A.~phalloides}                         \\[2pt]
-Risk level         & --                      & \textbf{CRITICAL}                                 \\[2pt]
-Recommendation     & --                      & Do not consume. Seek medical advice if ingested.  \\
+Predicted species  & \textit{A.phalloides} & \textit{Amanita phalloides}                      \\[3pt]
+Confidence         & 0.81                   & 0.81                                             \\[3pt]
+Toxicity class     & x                     & Deadly                                           \\[3pt]
+Edibility          & x                     & Fatally poisonous                                \\[3pt]
+Habitat            & x                     & Deciduous woodland                               \\[3pt]
+Active season      & x                     & Summer--Autumn                                   \\[3pt]
+Region             & x                     & Europe, North America                            \\[3pt]
+Lookalikes         & x                     & \textit{A.~citrina}, \textit{V.~volvacea}        \\[3pt]
+Key warnings       & x                     & Amatoxins; symptoms delayed 6--24\,h             \\[3pt]
+LLM verdict        & x                     & DANGER --- volva and gills consistent with
+                                                   \textit{A.~phalloides}                         \\[3pt]
+Risk level         & x                     & \textbf{CRITICAL}                                \\[3pt]
+Recommendation     & x                     & Do not consume. Seek medical advice if ingested. \\
 \hline
-\textbf{Total}     & \textbf{2}              & \textbf{13}                                       \\
+\textbf{Total}     & \textbf{2}             & \textbf{13}                                      \\
 \hline
 \end{tabular}
 \end{table}
@@ -804,41 +803,38 @@ Recommendation     & --                      & Do not consume. Seek medical advi
 % --------------------------------------------------
 % FIGURE: App screenshot (swap in your real image)
 % --------------------------------------------------
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=0.82\linewidth]{app_screenshot.png}
-    \caption{Gradio web interface output for a single \textit{Agaricus xanthodermus}
-             photograph submitted with location (United Kingdom) and season (Winter).
-             The pipeline returns a \textbf{HIGH} risk level driven by three compounding
-             factors: low vision confidence (27.7\%, below the 0.70 threshold),
-             a context mismatch flagged by the LLM audit (Winter does not match the
-             species' known Late summer--Autumn season), and a Toxic toxicity class.
-             The LLM verdict of \textsc{Suspicious} and the plain-language
-             recommendation (\emph{Do not consume}) demonstrate the eleven
-             information dimensions absent from a unimodal confidence score alone.}
-    \label{fig:app-output}
-\end{figure*}
 
- 
-The multimodal output adds eleven information dimensions absent from a
-confidence score. Three of these (LLM reasoning, risk level,
-recommendation) are derived rather than retrieved: they synthesise
-evidence from the image, the vision prediction, the ecological database,
-and user-provided context (season, location) into a single actionable
-output. A non-technical user receiving \texttt{Cantharellus cibarius,
-0.74} cannot determine reliability or next steps; the same user
-receiving the structured report receives a discrete risk verdict
-(\textsc{Critical} / \textsc{High} / \textsc{Moderate} / \textsc{Low})
-alongside the ecological evidence supporting it. Formal user evaluation
-of comprehension is identified as future work; the present comparison
-is a structural demonstration that the multimodal schema carries
-strictly more identification-relevant information than the unimodal
-alternative.
- 
- 
+% Mushroom image paired with the comparison table
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{app_image.png}
+    \caption{Live pipeline output for \textit{Amanita phalloides},
+             showing the \textbf{CRITICAL} risk verdict, LLM audit,
+             and plain-language recommendation from
+             Table~\ref{tab:output-comparison} rendered in the
+             Gradio interface. Ecological fields are sourced from
+             \texttt{mushroom\_context.json} and do not replace
+             expert mycological identification.}
+    \label{fig:amanita}
+\end{figure}
+
+Overall, This comparison shows that the proposed pipeline improves interpreability by transforming a raw classification score into a structured safety report with ecological grounding, risk interpretation and user oriented guidance. The output does not replace expert mycological identification, but it provides more meaningful decision support information for non technical users than a standalone image classier. 
+
+
+
 
 % ---------------- Discussion ----------------
 \section{Discussion}
+1. Overall finding, why multimodal is better than a single componaent system
+
+2. Accuracy vs safety: why the most accurate classifier is not automatically the safest
+
+3. Deployment trade-off: why YOLOv26n-cls was selected even though DINOv2 had higher Top-1 accuracy
+
+4. Interpretability and limitations: what Section D shows, and what still needs future validation
+
+
+Overall result and score. sectin c measure socre and section d measure what we see in the table. Score support the d resut that add more gemini is real y useful here by the only visio is omiss low score and d support that reslt by cleasry see the solution. fture workn is use uder to formal evalute the model if it really work woudld give more strong evalautio support.
 
 The results show that no single component is sufficient on its own.
 Vision-only models missed 70--86\% of dangerous mushrooms, while Gemini
@@ -846,12 +842,14 @@ alone wrongly flagged 70.7\% of safe species. Only the multimodal
 pipeline produced a usable balance, with F1 scores of 80--82\% across
 all three vision models.
 
+
 A notable finding is that classification accuracy did not predict safety
 performance. ConvNeXt-Tiny and DINOv2-Small had higher Top-1 accuracy
 than YOLOv26n-cls, but lower vision-only safety recall (14.3\% and
 15.3\% versus 30.0\%), because their higher confidence rarely tripped
 the 70\% threshold rule. In a safety-critical setting, calibration can
 matter more than raw accuracy.
+
 
 Once the LLM audit layer is added, the three multimodal configurations
 cluster within 2\,pp on F1, so the choice of vision model has only a
@@ -862,13 +860,18 @@ deciding factor: TFLite YOLOv26n-cls fits in a $\sim$200\,MB container
 versus $\sim$1.5\,GB for the PyTorch alternatives, which matters for
 serverless scale-to-zero deployment.
 
+
+
 % ---------------- Conclusion----------------
 \section{Conclusion}
 In this study, we proposed the unified multimodal mushroom classification end to end application. The dataset function with four stage pipeline 
 
 
 
-
+\textbf{Disclaimer.} This system is intended as decision support only and must not replace expert mycological identification.
+Users should always consult a qualified mycologist before
+consuming any wild mushroom.
+ 
 
 % if have a single appendix:
 %\appendix[Proof of the Zonklar Equations]
