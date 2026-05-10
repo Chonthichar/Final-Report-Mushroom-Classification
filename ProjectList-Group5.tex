@@ -624,7 +624,63 @@ To mitigate potential LLM hallucination where the model can generate incorrects 
 \subsection{\textbf{Deployment and Output}}  
 The mushroom framework pipeline is implemented as two containerized microservices via Docker Compose for local deployment and Google Cloud Run for production. The vision API runs the TFLite float16 model in a lightweight container of approximately 200 MB, eliminating PyTorch runtime dependency. The UI microservice provides a  Gradio web interface. Both service connected over an internal Docker Network. The production on CPU constraints is primary reason for YOLOv26n-cls TFLite was selected as the deployment model over the higher accuracy alternatives. 
 
-The final end-to-end pipeline produces a structured identification report delivered to the user via the Gradio web interface. The report is designed to provide non-technical users   containing the predicted species, confidence score, toxicity class, ecological context, LLM field assessment, risk level (CRITICAL/HIGH/MODERATE/LOW), and a plain-language recommendation, as defined in Table VI.Table. ~\ref{tab:output_schema} \label{text:schema_mention} 
+The final end-to-end pipeline produces a structured identification report delivered to the user via the Gradio web interface. The report is designed to provide non-technical users   containing the predicted species, confidence score, toxicity class, ecological context, LLM field assessment, risk level (CRITICAL/HIGH/MODERATE/LOW), and a plain-language recommendation. Fig.~\ref{fig:pipeline-full} illustrates the complete 
+pipeline from input image to structured output, including 
+an example report for \textit{Amanita phalloides} as 
+rendered in the Gradio interface, deployed via Docker Compose and Google Cloud Run.
+
+% Mushroom input image at top
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    box/.style={rectangle, draw, rounded corners,
+    minimum width=3.5cm, minimum height=0.8cm,
+    text centered, font=\small},
+    arrow/.style={->, thick}
+]
+
+% Mushroom image at top as a node
+\node (inputimg) 
+    {\includegraphics[width=0.4\columnwidth]{Sparrige_Schüppling_(Pholiota_squarrosa).jpg}};
+\node[below=0.1cm of inputimg, font=\small] (inputlabel) 
+    {Input: \textit{Amanita phalloides}};
+
+% Pipeline stages
+\node[box, fill=blue!15, below=0.4cm of inputlabel] (s1) 
+    {Stage 1: Vision API\\\footnotesize YOLOv26n TFLite};
+\node[box, fill=green!15, below=of s1] (s2) 
+    {Stage 2: Ecological Retrieval\\
+    \footnotesize mushroom\_context.json};
+\node[box, fill=orange!15, below=of s2] (s3) 
+    {Stage 3: LLM Audit\\
+    \footnotesize Gemini Flash Lite};
+\node[box, fill=red!15, below=of s3] (s4) 
+    {Stage 4: Risk Classifier\\
+    \footnotesize Rule-based Python};
+
+% App screenshot at bottom as a node
+\node[below=0.4cm of s4] (outputimg) 
+    {\includegraphics[width=0.95\columnwidth]{Gradio_UI.png}};
+\node[below=0.1cm of outputimg, font=\small] (outputlabel)
+    {Output: Structured report in Gradio interface};
+
+% Arrows
+\draw[arrow] (inputlabel) -- 
+    node[right]{\footnotesize image} (s1);
+\draw[arrow] (s1) -- 
+    node[right]{\footnotesize species and confidence} (s2);
+\draw[arrow] (s2) -- 
+    node[right]{\footnotesize 12-field record} (s3);
+\draw[arrow] (s3) -- 
+    node[right]{\footnotesize verdict and reasoning} (s4);
+\draw[arrow] (s4) -- 
+    node[right]{\footnotesize risk level} (outputimg);
+
+\end{tikzpicture}
+\caption{End-to-end pipeline for \textit{Amanita phalloides}}
+\label{fig:pipeline-full}
+\end{figure}
 
 
  
@@ -878,10 +934,10 @@ Overall, this study demonstrates that safety-oriented mushroom identification be
 % starts a section numbered zero.)
 %
 
-
+\clearpage
 \appendices
 
-\section{Full Architecture Benchmark}\label{app:full-bench}
+\section{\textbf{Full Architecture Benchmark}}\label{app:full-bench}
 
 
 This appendix reports the full eight-architecture exploration referenced in Section~\ref{subsec:baseline} The main results section reports only the three selected models, however the wider experiment included additional baselines to support the final model selection decision. 
@@ -919,7 +975,7 @@ TaxonomicYOLO26            & 79.7\%          & --              & $\sim$2M & 25.0
 \end{tabular}
 \end{table*}
  
-\section{Ecological Database Schema}
+\section{\textbf{Ecological Database Schema}}
 \label{app:eco-schema}
 
 This appendix describes the structure of the ecological database used in the multimodal pipeline. The database was implemented as a JSON file containing one record for each of the 169 mushroom species included in the system. Each entry contains 12 fields per species as defined 
@@ -997,7 +1053,7 @@ The ecological database was used by the pipeline in two ways. First, it supplied
 
  
 
-\section{Ablation Test Set: Dangerous Species}
+\section{\textbf{Ablation Test Set: Dangerous Species}}
 This appendix provides additional details for the ablation study reported in Section IV-C. The purpose of the ablation study was to evaluate how much each system component contributed to edible/toxic risk assessment when tested in isolation and in combination
 
 The ablation evaluation was restricted to the 40 species below, selected from the held-out test split (\texttt{data/dataset\_split/test/}) on the basis that their toxicity classification contains at least one of the following keywords: Deadly, Highly Toxic, Toxic, Hallucinogenic, or Pathogenic. Up to 20 images per species were sampled (seed 42), yielding a maximum of 800 images. Table~\ref{tab:app_c_species} lists all 40 species included in the evaluation.
@@ -1039,51 +1095,15 @@ The ablation evaluation was restricted to the 40 species below, selected from th
 \end{table*}
 
 
-\section{Deployment Architecture Diagram}
-\label{app:deployment}
-
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}[
-    node distance=0.8cm,
-    box/.style={rectangle, draw, rounded corners,
-    minimum width=3.5cm, minimum height=0.8cm,
-    text centered, font=\small},
-    arrow/.style={->, thick}
-]
-
-\node[box, fill=blue!15]  (s1) {Stage 1: Vision API\\
-                                \footnotesize YOLOv26n TFLite};
-\node[box, fill=green!15, below=of s1] (s2) 
-                                {Stage 2: Ecological Retrieval\\
-                                \footnotesize mushroom\_context.json};
-\node[box, fill=orange!15, below=of s2] (s3) 
-                                {Stage 3: LLM Audit\\
-                                \footnotesize Gemini Flash Lite};
-\node[box, fill=red!15, below=of s3] (s4) 
-                                {Stage 4: Risk Classifier\\
-                                \footnotesize Rule-based Python};
 
 
-\draw[arrow] (s1) -- node[right]{\footnotesize species + confidence} (s2);
-\draw[arrow] (s2) -- node[right]{\footnotesize 12-field record} (s3);
-\draw[arrow] (s3) -- node[right]{\footnotesize verdict + reasoning} (s4);
-
-\node[above=0.6cm of s1, font=\small] (input) {Input Image};
-\node[below=0.6cm of s4, font=\small] (output) 
-                                {Structured Report (CRITICAL / HIGH / 
-                                MODERATE / LOW)};
-
-\draw[arrow] (input) -- (s1);
-\draw[arrow] (s4)    -- (output);
-
-\end{tikzpicture}
-\caption{Four-stage multimodal pipeline architecture.}
-\label{fig:pipeline}
-\end{figure}
 
 
-\section{LLM Audit System Prompt (Ollama/Gemini)}
+\section{\textbf{LLM Audit System Prompt (Ollama/Gemini})}
+\label{app:llm-prompt}
+
+The following prompt was submitted to Gemini Flash Lite at Stage 3 of the pipeline for each input image during both ablation evaluation and production deployment.
+
 The following prompt was used for the LLM audit layer alongside each mushroom photograph during evaluation.
 
 \textbf{System Prompt:} You are a field mycology safety auditor. You have been given a photo of a mushroom taken in the field. A computer vision model identified it as [PREDICTED SPECIES] with [CONFIDENCE]\% confidence.
@@ -1110,7 +1130,7 @@ Visual identification features to check in the photo:
 Your Task:
 \begin{enumerate}
     \item Look at the photo carefully and compare it against the known features above.
-    \item Comment on what you can see --- cap shape/colour, gill colour, stem, any bruising or staining.
+    \item Comment on what you can see - cap shape/colour, gill colour, stem, any bruising or staining.
     \item Mention relevant field checks the user should do in person.
     \item State AGREE if the photo is consistent with [PREDICTED SPECIES], or DISAGREE if something looks wrong.
     \item If the species is toxic or deadly, issue a clear safety warning.
@@ -1118,9 +1138,8 @@ Your Task:
 
 Begin your response with "AGREE", "DISAGREE", or "DANGER", then give your field assessment.
 
-\textit{Note: The ecological fields (habitat, season, toxicity, morphological features) are drawn from a curated species context database of 169 mushroom classes. In the ablation evaluation, user environment fields (season, location) were set to Unknown as the test set is evaluated without real-world geolocation context.}
 
-\section{Excluded LLM Configurations}\label{app:ablation}
+\section{\textbf{Excluded LLM Configurations}}\label{app:ablation}
 In addition to Gemini~3~Flash (the deployed audit model), two smaller
 local LLMs were initially tested but excluded from the final ablation
 results due to fundamental reasoning failures at their parameter scales.
@@ -1154,16 +1173,12 @@ basis.
 
 
  
- 
 
-
-
-
-\section{Example Structured Output / App Output
-Supports Results Section D: comparison of unimodal and multimodal outputs.}
 
 % use section* for acknowledgment
-\section*{Acknowledgment}
+\section*{Contibution}
+
+\section*{AI Declaration}
 
 
 The authors would like to thank...
@@ -1199,57 +1214,12 @@ The authors would like to thank...
 % <OR> manually copy in the resultant .bbl file
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
-
+% \clearpage
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
+% Sapkota, R., & Karkee, M. (2025). Ultralytics YOLO Evolution: An overview of YOLO26, YOLO11, YOLOV8 and YOLOV5 object detectors for computer vision and pattern recognition. arXiv (Cornell University). https://doi.org/10.48550/arxiv.2510.09653
 
-% biography section
-% 
-% If you have an EPS/PDF photo (graphicx package needed) extra braces are
-% needed around the contents of the optional argument to biography to prevent
-% the LaTeX parser from getting confused when it sees the complicated
-% \includegraphics command within an optional argument. (You could create
-% your own custom macro containing the \includegraphics command to make things
-% simpler here.)
-%\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{mshell}}]{Michael Shell}
-% or if you just want to reserve a space for a photo:
-
-\begin{IEEEbiography}{Michael Shell}
-Biography text here.
-\end{IEEEbiography}
-
-
-% if you will not have a photo at all:
-\begin{IEEEbiographynophoto}{John Doe}
-Biography text here.
-\end{IEEEbiographynophoto}
-
-% insert where needed to balance the two columns on the last page with
-% biographies
-%\newpage
-
-\begin{IEEEbiographynophoto}{Jane Doe}
-Biography text here.
-\end{IEEEbiographynophoto}
-
-Sapkota, R., & Karkee, M. (2025). Ultralytics YOLO Evolution: An overview of YOLO26, YOLO11, YOLOV8 and YOLOV5 object detectors for computer vision and pattern recognition. arXiv (Cornell University). https://doi.org/10.48550/arxiv.2510.09653
-
-% You can push biographies down or up by placing
-% a \vfill before or after them. The appropriate
-% use of \vfill depends on what kind of text is
-% on the last page and whether or not the columns
-% are being equalized.
-
-%\vfill
-
-% Can be used to pull up biographies so that the bottom of the last one
-% is flush with the other column.
-%\enlargethispage{-5in}
-
-
-
-% that's all folks
 \end{document}
 
 
