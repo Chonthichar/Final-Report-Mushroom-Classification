@@ -152,6 +152,9 @@
 \usepackage{amssymb}   % make sure this is in your preamble
 \usepackage{booktabs}  % optional but cleaner rules
 \usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+
 
 % *** MATH PACKAGES ***
 %
@@ -390,7 +393,7 @@ Chonthichar Soythong\IEEEauthorrefmark{3}~\IEEEmembership{}}
 % Remember, if you use this you must call \IEEEpubidadjcol in the second
 % column for its text to clear the IEEEpubid mark.
 
-
+\renewenvironment{IEEEkeywords}{}{}
 
 % use for special paper notices
 %\IEEEspecialpapernotice{(Invited Paper)}
@@ -428,7 +431,6 @@ is available on GitHub and the system is deployed on Google Cloud.
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-Mushroom classification, Multimodal AI, Explainable AI, Ecological context, Large language models.
 \end{IEEEkeywords}}
 
 
@@ -718,21 +720,7 @@ Overall, the DF24-Mini result strengthens the main finding from the internal ben
 
 Table \ref{tab:ablation_full_results} compares three types of configurations: unimodal visual baseline, standalone Gemini baseline and multimodal vision with Gemini pipelines. 
 
-\textbf{(1) Unimodal vision baseline result.} The results demonstrate that using only vision classification baseline was not sufficient for safety critical mushroom identification. YOLOv26n-cls detected 30.0\% of dangerous cases, while ConvNeXt-Tiny and DINOv2-Small detected only 14.3\% and 15.3\%, respectively. This means that the vision classification baseline system missed most classification between 70.0\% and 85.7\% of dangerous cases. In addition, the 0.0\% false positive rate for DINOv2-Small and ConvNeXt-Tiny shows that these models did not incorrectly flag safe mushroom as dangerous. However, this low false positive rate came at the cost of very low safety recall, meaning that they also failed to flag most dangerous mushrooms. Although ConvNeXt-Tiny and DINOv2-Small achieved higher classification accuracy in the internal benchmark, this did not translate into better safety recall in the fallback setting. This means that classification accuracy alone is not sufficient for evaluating a safety-oriented mushroom identification system. 
-
-
-\textbf{(2) Standalone Gemini baseline result.} Standalone Gemini baseline achieved a highest safety recall at 92.6\%, meaning that it detected most dangerous mushroom cases. However, it also incorrectly flagged 70.7\% of safe cases as dangerous. This high false positive rate shows that Gemini was too conservative and impractical as a standalone baseline in this study. In practical use, this means that the model would flags almost every mushroom, including common edible ones as a dangerous species.
-
-% This excessive false classification may reduce user trust in the system.
-
-\textbf{(3) Multimodal result.}
-The multimodal configurations provided a better balance between classify dangerous mushrooms and avoiding the excessive false detection. YOLOv26n-cls with Gemini achieved 75.9\% safety recall and an F1 score of 80.0\%. ConvNeXt-Tiny with Gemini and DINOv2-Small with Gemini achieved slightly higher F1 scores of 81.2\% and 81.9\%, respectively. The Gemini audit layer reduced the performance gap between the lightweight YOLOv26n-cls model and the larger vision models.
-
-\textbf{(4) Deployment decision.}
-Therefore, the final modal choice was guided by deployment practically rather than focusing solely on the classification accuracy alone. Although, DINOv2-Small with Gemini achieved the highest F1 score, YOLOv26n-cls wth Gemini provided a comparable safety result with a much smaller modal size and fastest speed inference. In the ablation harness, for speed inference during the real time classification, YOLOv26n-cls required only 15.3 ms per image compared with 30.1 ms for ConvNeXt-Tiny and 38.7 ms for DINOv2-Small. Since the Gemini API call already slower the overall pipeline latency, the difference between the vision modesl has less impact on the final user facing response time. Therefore YOLOv26n-cls was selected as the most practical deployment because it provides the best balance between safety performance, inference speed, model size, and deployment feasibility.
-
-
-\begin{table}[h]
+\begin{table}[h!]
 \centering
 \caption{Ablation study on 300 images: 203 dangerous cases and 97 safe cases.}
 \label{tab:ablation_full_results}
@@ -761,6 +749,21 @@ DINOv2-S-Gemini *(38.7ms)      & 74.9\% & 10.3\% & \textbf{81.9\%} \\
 \end{tabular}
 \end{table}
 
+\textbf{(1) Unimodal vision baseline result.} The results demonstrate that using only vision classification baseline was not sufficient for safety critical mushroom identification. YOLOv26n-cls detected 30.0\% of dangerous cases, while ConvNeXt-Tiny and DINOv2-Small detected only 14.3\% and 15.3\%, respectively. This means that the vision classification baseline system missed most classification between 70.0\% and 85.7\% of dangerous cases. In addition, the 0.0\% false positive rate for DINOv2-Small and ConvNeXt-Tiny shows that these models did not incorrectly flag safe mushroom as dangerous. However, this low false positive rate came at the cost of very low safety recall, meaning that they also failed to flag most dangerous mushrooms. Although ConvNeXt-Tiny and DINOv2-Small achieved higher classification accuracy in the internal benchmark, this did not translate into better safety recall in the fallback setting. This means that classification accuracy alone is not sufficient for evaluating a safety-oriented mushroom identification system. 
+
+
+\textbf{(2) Standalone Gemini baseline result.} Standalone Gemini baseline achieved a highest safety recall at 92.6\%, meaning that it detected most dangerous mushroom cases. However, it also incorrectly flagged 70.7\% of safe cases as dangerous. This high false positive rate shows that Gemini was too conservative and impractical as a standalone baseline in this study. In practical use, this means that the model would flags almost every mushroom, including common edible ones as a dangerous species.
+
+% This excessive false classification may reduce user trust in the system.
+
+\textbf{(3) Multimodal result.}
+The multimodal configurations provided a better balance between classify dangerous mushrooms and avoiding the excessive false detection. YOLOv26n-cls with Gemini achieved 75.9\% safety recall and an F1 score of 80.0\%. ConvNeXt-Tiny with Gemini and DINOv2-Small with Gemini achieved slightly higher F1 scores of 81.2\% and 81.9\%, respectively. The Gemini audit layer reduced the performance gap between the lightweight YOLOv26n-cls model and the larger vision models.
+
+\textbf{(4) Deployment decision.}
+Therefore, the final modal choice was guided by deployment practically rather than focusing solely on the classification accuracy alone. Although, DINOv2-Small with Gemini achieved the highest F1 score, YOLOv26n-cls wth Gemini provided a comparable safety result with a much smaller modal size and fastest speed inference. In the ablation harness, for speed inference during the real time classification, YOLOv26n-cls required only 15.3 ms per image compared with 30.1 ms for ConvNeXt-Tiny and 38.7 ms for DINOv2-Small. Since the Gemini API call already slower the overall pipeline latency, the difference between the vision modesl has less impact on the final user facing response time. Therefore YOLOv26n-cls was selected as the most practical deployment because it provides the best balance between safety performance, inference speed, model size, and deployment feasibility.
+
+
+
  
 \subsection{\textbf{Comparison of Unimodal and  Multimodal Outputs}}
 
@@ -771,7 +774,7 @@ Table~\ref{tab:output-comparison} illustrates this using
 \textit{Amanita phalloides} image. A YOLOv26n-cls unimodal system returns only a predicted species
 name and confidence score of 0.81, providing insufficient data for user. In contrast, the multimodal pipeline additionally returns toxicity class, edibility, habitat, season, geographic region, known lookalikes, key warnings, LLM reasoning, risk level, and a plain-language recommendation. The example at Fig.~\ref{fig:amanita} shows the corresponding live application output and demonstrating how the structured output is presented in the Gradio interface. 
 
-\begin{table}[h]
+\begin{table}[h!]
 \centering
 \caption{Output comparison for a single \textit{Amanita phalloides}
          image: unimodal classifier versus the multimodal pipeline.}
@@ -824,53 +827,41 @@ Overall, This comparison shows that the proposed pipeline improves interpreabili
 
 
 % ---------------- Discussion ----------------
-\section{Discussion}
-1. Overall finding, why multimodal is better than a single componaent system
+\section{\textbf{Discussion}}
 
-2. Accuracy vs safety: why the most accurate classifier is not automatically the safest
+These results shows that neither vision classification nor Gemini isolated was sufficient for reliable edible and toxic assessment. The vision identification model missed classify between 70.0\% and 85.7\% of dangerous cases. In contrast, Gemini detects most dangerous cases but incorrectly flagged 70.7\% of safe cases as dangerous. DINOv2-Small and ConvNeXt-Tiny achieved higher Top-1 accuracy than YOLOv26n-cls in the internal benchmarking but they performed worse in the ablation setting. 
 
-3. Deployment trade-off: why YOLOv26n-cls was selected even though DINOv2 had higher Top-1 accuracy
+A key finding is that higher species classification accuracy did not lead to better toxic-risk detection, because the vision models were trained to classify species, not to directly reason about edibility or toxicity. In the vision-only setting, the 70\% threshold acted only as an uncertainty warning, not as true toxicity reasoning. This highlights the importance of adding ecological context and an LLM audit layer. This indicate that a single component system is not suitable at detecting toxic risk and too conservative for practical use. 
 
-4. Interpretability and limitations: what Section D shows, and what still needs future validation
-
-
-Overall result and score. sectin c measure socre and section d measure what we see in the table. Score support the d resut that add more gemini is real y useful here by the only visio is omiss low score and d support that reslt by cleasry see the solution. fture workn is use uder to formal evalute the model if it really work woudld give more strong evalautio support.
-
-The results show that no single component is sufficient on its own.
-Vision-only models missed 70--86\% of dangerous mushrooms, while Gemini
-alone wrongly flagged 70.7\% of safe species. Only the multimodal
-pipeline produced a usable balance, with F1 scores of 80--82\% across
-all three vision models.
+The multimodal provided the best balance, with F1 score between 80.0\% and 81.9\%. When Gemini was added, all three multimodal configurations achieved very similar F1 scores,  between 80.0\% to 81.9\%  This findings support the main decision to combine vision classification with ecological metadata and an Gemini LLM audit layer.
 
 
-A notable finding is that classification accuracy did not predict safety
-performance. ConvNeXt-Tiny and DINOv2-Small had higher Top-1 accuracy
-than YOLOv26n-cls, but lower vision-only safety recall (14.3\% and
-15.3\% versus 30.0\%), because their higher confidence rarely tripped
-the 70\% threshold rule. In a safety-critical setting, calibration can
-matter more than raw accuracy.
+The results from the external DF24-Mini benchmark further support the deployment selection.  YOLOv26n-cls did not achieve the highest accuracy overall, but it remained competitive against published baselines that requiring far fewer parameters than a large ViT and SE-ResNeXt models. In addition, YOLOv26n-cls also required only 15.3 ms per image in the ablation harness, compared with 30.1 ms for ConvNeXt-Tiny and 38.7 ms for DINOv2-Small. These results supports the conclusion that YOLOv26n-cls provides the best practical trade-off between classification performance, toxic-risk detection, inference speed, model size and deployment efficiently. 
 
+The structure output comparison addresses RQ3 by further analysis that the proposed pipeline provides more useful information than a standard vision classifier. A vision model only returns a species label and confidence score which is provides no basic knowledge to evaluate whether to trust the prediction or what action should be taken. In contrast, the propose multimodal model generates a 13 field report that includes toxicity class, ecological context, risk level, LLM reasoning, and user guidance. This design support the main aim of the study that to build a mushroom identification system that is more interpretable and more useful.
+ 
+However, we aware that our research may have several limitations due to the time constraint of the project. First, the ecological database was developed as a prototype knowledge base, compile from open-source resources, and the database was not validated by expert mycologist. Second, the system was not evaluated with real users, so the structure output has not yet been tested in real word contexts. Therefore, the system should be understood as a decision support prototype rather than a replacement for expert mushroom identification. Future work should include the large scale of validation, expert review of the ecological database and testing on the user in order to evaluate whether the structured output is useful and understandable in real world contexts.
 
-Once the LLM audit layer is added, the three multimodal configurations
-cluster within 2\,pp on F1, so the choice of vision model has only a
-small effect on end-to-end safety. The Gemini API call (500--1500\,ms)
-dominates total latency, making the difference between 4.8\,ms and
-35\,ms vision inference negligible. Deployment footprint becomes the
-deciding factor: TFLite YOLOv26n-cls fits in a $\sim$200\,MB container
-versus $\sim$1.5\,GB for the PyTorch alternatives, which matters for
-serverless scale-to-zero deployment.
 
 
 
 % ---------------- Conclusion----------------
-\section{Conclusion}
-In this study, we proposed the unified multimodal mushroom classification end to end application. The dataset function with four stage pipeline 
+\section{\textbf{Conclusion}}
+
+This study proposed a unified multimodal mushroom classification framework that combines vision-based species classification, ecological context retrieval, Gemini-based LLM auditing, and structured output generation. The results show that image classification alone is not sufficient for reliable edible and toxic assessment, because vision models mainly predict species labels and do not directly reason about toxicity or ecological risk.
+
+Across the experiments, YOLOv26n-cls was selected as the final deployment model because it provided the best practical trade-off between classification performance, model size, inference speed, and deployment feasibility. Although larger models achieved higher Top-1 accuracy, their advantage became less important once the Gemini audit layer was added.
+
+The ablation study showed that the multimodal pipeline provided a better balance than either vision-only classification or Gemini alone. In addition, the structured output comparison showed that the proposed system provides more useful information than a standard classifier by adding toxicity, ecological context, risk level, LLM reasoning, and user guidance.
+
+The system remains a prototype. The ecological database requires expert validation, and user testing in real foraging conditions has not yet been conducted. These are the most important directions for future work before the system could be considered for broader deployment.
+
+Overall, this study demonstrates that safety-oriented mushroom identification benefits from integrating vision, ecological knowledge, and language reasoning into a unified pipeline, and that this integration is achievable within practical deployment constraints.
+
 
 
 
 \textbf{Disclaimer.} This system is intended as decision support only and must not replace expert mycological identification.
-Users should always consult a qualified mycologist before
-consuming any wild mushroom.
  
 
 % if have a single appendix:
@@ -890,8 +881,209 @@ consuming any wild mushroom.
 
 \appendices
 
-\section{LLM Audit Prompt (Ollama/Gemini)}
+\section{Full Architecture Benchmark}\label{app:full-bench}
 
+
+This appendix reports the full eight-architecture exploration referenced in Section~\ref{subsec:baseline} The main results section reports only the three selected models, however the wider experiment included additional baselines to support the final model selection decision. 
+
+The selected models represent different architecture families: YOLOv26n-cls as a lightweight deployment-oriented classifier, ConvNeXt-Tiny as a modern CNN baseline, and DINOv2-Small as a self-supervised Vision Transformer. Additional models, including EfficientNet-B0, YOLOv8n-cls, and TaxonomicYOLO26, were included as secondary baselines.
+ 
+Table~\ref{tab:full-leaderboard} reports every trained model on the held-out 10\% test split of the 169 species dataset. Accuracy values are therefore directly comparable and the model were trained locally on an RTX4070.
+
+The full shows that DINOv2-Small achieved the highest Top-1 accuracy, while ConvNeXt-Tiny also performed strongly. YOLOv26n-cls achieved lower Top-1 accuracy, but remained competitive in Top-5 accuracy and had the smallest deployment footprint after TFLite float16 export. This appendix therefore provides the detailed evidence behind the deployment trade-off discussed in the main results section.
+
+In addition, the TaxonomicYOLO26 experiment was tested as an exploratory dual-head model predicting both genus and species. However, its species-level accuracy was lower than the standard YOLOv26n-cls model, so it was not used in the final pipeline.
+
+ 
+\begin{table*}[!t]
+\centering
+\caption{ Across all trained architectures on the
+169-species held-out test split (80/10/10, batch=1, 224$\times$224).}
+\label{tab:full-leaderboard}
+\small
+\begin{tabular}{@{}lccrrrrl@{}}
+\hline
+\textbf{Model} & \textbf{Top-1} & \textbf{Top-5} & \textbf{Params}
+& \textbf{Size} & \textbf{GPU (ms)} & \textbf{CPU (ms)} & \textbf{Notes} \\
+\hline
+DINOv2-Small               & 92.8\%          & 98.4\%          & 22.0M & 85 MB    & 10.2   & 32.2   & Self-supervised ViT, accuracy leader \\
+ConvNeXt-Tiny (PEFT)       & 91.1\%          & 98.3\%          & 28.6M & 110 MB   & 7.6  & 35.6 & Modern CNN, PEFT two-phase           \\
+EfficientNet-B0            & 89.5\%          & 97.9\%          & 5.3M  & 17.2 MB  & 11.6 & 19.2 & Classification-native CNN            \\
+YOLOv26n-cls (PyTorch)     & 88.1\%          & 98.4\%          & 1.74M & 3.6 MB   & 6.3  & 7.1  & Production source                    \\
+YOLOv26n-cls (TFLite f16)  & 88.1\%          & 98.4\%          & 1.74M & 3.6 MB   & --   & 4.8  & \textbf{Deployed model}              \\
+YOLOv8n-cls                & 86.8\%          & 97.9\%          & 2.7M  & 3.4 MB   & 4.6  & 6.3  & Original baseline                    \\
+TaxonomicYOLO26            & 79.7\%          & --              & $\sim$2M & 25.0 MB & --   & --  & Dual-head genus + species            \\
+\hline
+\multicolumn{8}{l}{\textit{Scoped but not trained:}~ViT-S/16, YOLOv11n-cls.} \\
+\hline
+\end{tabular}
+\end{table*}
+ 
+\section{Ecological Database Schema}
+\label{app:eco-schema}
+
+This appendix describes the structure of the ecological database used in the multimodal pipeline. The database was implemented as a JSON file containing one record for each of the 169 mushroom species included in the system. Each entry contains 12 fields per species as defined 
+in Table~\ref{tab:eco-schema}. The JSON descriptions
+illustrates two example entries using an edible and toxic 
+lookalike pair, demonstrating how the database supports 
+species disambiguation in the LLM audit layer.
+
+\begin{table}[h]
+\centering
+\normalsize
+\caption{Ecological database field definitions (12 fields per species entry).}
+\label{tab:eco-schema}
+\begin{tabular}{ll}
+\hline
+\textbf{Field} & \textbf{Description} \\
+\hline
+species\_name     & Scientific species name \\
+toxicity\_type    & Edible, Toxic, Deadly, or Hallucinogenic \\
+habitat           & Typical growth environment \\
+season            & Active fruiting period \\
+region            & Geographic distribution \\
+key\_warnings     & Safety-critical identification notes \\
+cap\_description  & Morphological cap features \\
+gill\_description & Gill colour, structure, and spacing \\
+stem\_description & Stem height, colour, and ring presence \\
+smell             & Characteristic odour \\
+lookalikes        & Similar species with key differences \\
+environment\_tips & Contextual foraging guidance \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\footnotesize
+\begin{verbatim}
+[
+  {
+    "species_name": "Agaricus augustus",
+    "toxicity_type": "Edible",
+    "habitat": "Coniferous and mixed forests",
+    "season": "Late summer to autumn",
+    "region": "North America, Europe",
+    "key_warnings": "Beware yellow staining at base.",
+    "cap_description": "Large (10-25cm), brown scales.",
+    "gill_description": "White to chocolate brown.",
+    "stem_description": "Tall (10-20cm), ring present.",
+    "smell": "Strongly of anise or almonds.",
+    "lookalikes": "A. xanthodermus (yellow, phenol).",
+    "environment_tips": "Near spruce or pine."
+  },
+  {
+    "species_name": "Agaricus xanthodermus",
+    "toxicity_type": "Toxic",
+    "habitat": "Grassy areas, gardens, parks",
+    "season": "Late summer to autumn",
+    "region": "North America, Europe, Australia",
+    "key_warnings": "Stains bright yellow when bruised.",
+    "cap_description": "Medium (5-15cm), stains yellow.",
+    "gill_description": "Pinkish-grey, never white.",
+    "stem_description": "Bulbous base, yellow when cut.",
+    "smell": "Ink, phenol, or library paste.",
+    "lookalikes": "A. arvensis (slow yellow, anise).",
+    "environment_tips": "Lawns, compost heaps after rain."
+  }
+]
+\end{verbatim}
+\caption{Example records from \texttt{mushroom\_context.json}}
+\label{fig:eco-example}
+\end{figure}
+
+The ecological database was used by the pipeline in two ways. First, it supplied structured context to the LLM audit prompt. Second, it supplied user-facing information in the final structured output, including toxicity, habitat, lookalikes, warnings, and recommendation fields.
+
+\textit{Note: The database should be interpreted as a prototype knowledge base. The records were compiled from open online sources and were not independently validated by a professional mycologist. Future work should include expert review and correction of the ecological records before the system is used in real-world foraging contexts.}
+
+ 
+
+\section{Ablation Test Set: Dangerous Species}
+This appendix provides additional details for the ablation study reported in Section IV-C. The purpose of the ablation study was to evaluate how much each system component contributed to edible/toxic risk assessment when tested in isolation and in combination
+
+The ablation evaluation was restricted to the 40 species below, selected from the held-out test split (\texttt{data/dataset\_split/test/}) on the basis that their toxicity classification contains at least one of the following keywords: Deadly, Highly Toxic, Toxic, Hallucinogenic, or Pathogenic. Up to 20 images per species were sampled (seed 42), yielding a maximum of 800 images. Table~\ref{tab:app_c_species} lists all 40 species included in the evaluation.
+
+
+
+
+\begin{table*}[h]
+\centering
+\caption{Ablation Study Test Set: 40 Dangerous Species}
+\label{tab:app_c_species}
+\normalsize
+\begin{tabular}{@{}llll@{}}
+\hline
+\textbf{Species} & \textbf{Toxicity} & \textbf{Species} & \textbf{Toxicity} \\
+\hline
+\textit{Amanita phalloides} & Deadly & \textit{Pholiota squarrosa} & Toxic \\
+\textit{Galerina marginata} & Deadly & \textit{Stropharia aeruginosa} & Edible (C) / Toxic \\
+\textit{Paxillus involutus} & Deadly & \textit{Clitocybe nebularis} & Toxic (For many) \\
+\textit{Gyromitra esculenta} & Deadly (Raw)/Toxic & \textit{Coprinopsis atramentaria} & Toxic (w/ alcohol) \\
+\textit{Amanita pantherina} & Highly Toxic & \textit{Hygrophoropsis aurantiaca} & Toxic (Mild)/Edible \\
+\textit{Agaricus xanthodermus} & Toxic & \textit{Lactarius torminosus} & Toxic (R)/Edible (P) \\
+\textit{Amanita augusta} & Toxic & \textit{Panaeolus papilionaceus} & Toxic (Mild) \\
+\textit{Amanita brunnescens} & Toxic & \textit{Schizophyllum commune} & Toxic / Pathogenic \\
+\textit{Amanita citrina} & Toxic & \textit{Tapinella atrotomentosa} & Toxic (R)/Edible (P) \\
+\textit{Amanita flavoconia} & Toxic & \textit{Verpa bohemica} & Toxic (R)/Edible (P) \\
+\textit{Chlorophyllum brunneum} & Toxic & \textit{Vulpicida pinastri} & Toxic (Lichen) \\
+\textit{Chlorophyllum molybdites} & Toxic & \textit{Amanita muscaria} & Toxic / Halluc. \\
+\textit{Gyromitra gigas} & Toxic & \textit{Amanita persicina} & Toxic / Halluc. \\
+\textit{Gyromitra infula} & Toxic & \textit{Gymnopilus luteofolius} & Toxic / Halluc. \\
+\textit{Hypholoma fasciculare} & Toxic & \textit{Psilocybe azurescens} & Toxic / Halluc. \\
+\textit{Lactarius turpis} & Toxic & \textit{Psilocybe caerulescens} & Toxic / Halluc. \\
+\textit{Leratiomyces ceres} & Toxic & \textit{Psilocybe cubensis} & Toxic / Halluc. \\
+\textit{Omphalotus illudens} & Toxic & \textit{Psilocybe cyanescens} & Toxic / Halluc. \\
+\textit{Omphalotus olivascens} & Toxic & \textit{Psilocybe ovoideocystidiata} & Toxic / Halluc. \\
+\textit{Pholiota aurivella} & Edible (C) / Toxic & \textit{Psilocybe pelliculosa} & Toxic / Halluc. \\
+\hline
+\end{tabular}%
+\end{table*}
+
+
+\section{Deployment Architecture Diagram}
+\label{app:deployment}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    box/.style={rectangle, draw, rounded corners,
+    minimum width=3.5cm, minimum height=0.8cm,
+    text centered, font=\small},
+    arrow/.style={->, thick}
+]
+
+\node[box, fill=blue!15]  (s1) {Stage 1: Vision API\\
+                                \footnotesize YOLOv26n TFLite};
+\node[box, fill=green!15, below=of s1] (s2) 
+                                {Stage 2: Ecological Retrieval\\
+                                \footnotesize mushroom\_context.json};
+\node[box, fill=orange!15, below=of s2] (s3) 
+                                {Stage 3: LLM Audit\\
+                                \footnotesize Gemini Flash Lite};
+\node[box, fill=red!15, below=of s3] (s4) 
+                                {Stage 4: Risk Classifier\\
+                                \footnotesize Rule-based Python};
+
+
+\draw[arrow] (s1) -- node[right]{\footnotesize species + confidence} (s2);
+\draw[arrow] (s2) -- node[right]{\footnotesize 12-field record} (s3);
+\draw[arrow] (s3) -- node[right]{\footnotesize verdict + reasoning} (s4);
+
+\node[above=0.6cm of s1, font=\small] (input) {Input Image};
+\node[below=0.6cm of s4, font=\small] (output) 
+                                {Structured Report (CRITICAL / HIGH / 
+                                MODERATE / LOW)};
+
+\draw[arrow] (input) -- (s1);
+\draw[arrow] (s4)    -- (output);
+
+\end{tikzpicture}
+\caption{Four-stage multimodal pipeline architecture.}
+\label{fig:pipeline}
+\end{figure}
+
+
+\section{LLM Audit System Prompt (Ollama/Gemini)}
 The following prompt was used for the LLM audit layer alongside each mushroom photograph during evaluation.
 
 \textbf{System Prompt:} You are a field mycology safety auditor. You have been given a photo of a mushroom taken in the field. A computer vision model identified it as [PREDICTED SPECIES] with [CONFIDENCE]\% confidence.
@@ -928,143 +1120,7 @@ Begin your response with "AGREE", "DISAGREE", or "DANGER", then give your field 
 
 \textit{Note: The ecological fields (habitat, season, toxicity, morphological features) are drawn from a curated species context database of 169 mushroom classes. In the ablation evaluation, user environment fields (season, location) were set to Unknown as the test set is evaluated without real-world geolocation context.}
 
-
-\section{Ablation Study Test Set (Dangerous Species)}
-
-The ablation evaluation was restricted to the 40 species below, selected from the held-out test split (\texttt{data/dataset\_split/test/}) on the basis that their toxicity classification contains at least one of the following keywords: Deadly, Highly Toxic, Toxic, Hallucinogenic, or Pathogenic. Up to 20 images per species were sampled (seed 42), yielding a maximum of 800 images. The partial evaluation reported in this paper used 245 images across these 40 classes.
-
-\section{Dangerous Species List}
-\begin{table}[h]
-\centering
-\caption{Ablation Study Test Set: 40 Dangerous Species}
-\label{tab:app_c_species}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}llll@{}}
-\hline
-\textbf{Species} & \textbf{Toxicity} & \textbf{Species} & \textbf{Toxicity} \\
-\hline
-\textit{Amanita phalloides} & Deadly & \textit{Pholiota squarrosa} & Toxic \\
-\textit{Galerina marginata} & Deadly & \textit{Stropharia aeruginosa} & Edible (C) / Toxic \\
-\textit{Paxillus involutus} & Deadly & \textit{Clitocybe nebularis} & Toxic (For many) \\
-\textit{Gyromitra esculenta} & Deadly (Raw)/Toxic & \textit{Coprinopsis atramentaria} & Toxic (w/ alcohol) \\
-\textit{Amanita pantherina} & Highly Toxic & \textit{Hygrophoropsis aurantiaca} & Toxic (Mild)/Edible \\
-\textit{Agaricus xanthodermus} & Toxic & \textit{Lactarius torminosus} & Toxic (R)/Edible (P) \\
-\textit{Amanita augusta} & Toxic & \textit{Panaeolus papilionaceus} & Toxic (Mild) \\
-\textit{Amanita brunnescens} & Toxic & \textit{Schizophyllum commune} & Toxic / Pathogenic \\
-\textit{Amanita citrina} & Toxic & \textit{Tapinella atrotomentosa} & Toxic (R)/Edible (P) \\
-\textit{Amanita flavoconia} & Toxic & \textit{Verpa bohemica} & Toxic (R)/Edible (P) \\
-\textit{Chlorophyllum brunneum} & Toxic & \textit{Vulpicida pinastri} & Toxic (Lichen) \\
-\textit{Chlorophyllum molybdites} & Toxic & \textit{Amanita muscaria} & Toxic / Halluc. \\
-\textit{Gyromitra gigas} & Toxic & \textit{Amanita persicina} & Toxic / Halluc. \\
-\textit{Gyromitra infula} & Toxic & \textit{Gymnopilus luteofolius} & Toxic / Halluc. \\
-\textit{Hypholoma fasciculare} & Toxic & \textit{Psilocybe azurescens} & Toxic / Halluc. \\
-\textit{Lactarius turpis} & Toxic & \textit{Psilocybe caerulescens} & Toxic / Halluc. \\
-\textit{Leratiomyces ceres} & Toxic & \textit{Psilocybe cubensis} & Toxic / Halluc. \\
-\textit{Omphalotus illudens} & Toxic & \textit{Psilocybe cyanescens} & Toxic / Halluc. \\
-\textit{Omphalotus olivascens} & Toxic & \textit{Psilocybe ovoideocystidiata} & Toxic / Halluc. \\
-\textit{Pholiota aurivella} & Edible (C) / Toxic & \textit{Psilocybe pelliculosa} & Toxic / Halluc. \\
-\hline
-\end{tabular}%
-}
-\end{table}
-
-
-\section{Full Architecture Benchmark}\label{app:full-bench}
- 
-This appendix reports the full eight-architecture exploration referenced
-in Section~\ref{subsec:baseline}. Three architectures (YOLOv26n-cls,
-ConvNeXt-Tiny~PEFT, DINOv2-Small) were selected for systematic
-benchmarking because they represent fundamentally different design
-paradigms; the remaining five were trained or evaluated as
-context-setting baselines. ViT-S/16 was scoped during the literature
-review but was not trained to convergence within project budget; it is
-included in the benchmarking narrative for completeness but not in the
-results table.
- 
-Table~\ref{tab:full-leaderboard} reports every trained model on the
-held-out 10\% test split of the 169-species dataset. CPU inference times
-were measured at batch=1 with 50 warmup passes followed by 200 timed
-passes; the TFLite f16 row uses the XNNPACK delegate.
- 
-\begin{table*}[!t]
-\centering
-\caption{Full leaderboard across all trained architectures on the
-169-species held-out test split (80/10/10, batch=1, 224$\times$224).}
-\label{tab:full-leaderboard}
-\small
-\begin{tabular}{@{}lccrrrrl@{}}
-\hline
-\textbf{Model} & \textbf{Top-1} & \textbf{Top-5} & \textbf{Params}
-& \textbf{Size} & \textbf{GPU (ms)} & \textbf{CPU (ms)} & \textbf{Notes} \\
-\hline
-DINOv2-Small               & 92.8\%          & 98.4\%          & 22.0M & 85 MB    & --   & --   & Self-supervised ViT, accuracy leader \\
-ConvNeXt-Tiny (PEFT)       & 91.1\%          & 98.3\%          & 28.6M & 110 MB   & 7.6  & 35.6 & Modern CNN, PEFT two-phase           \\
-EfficientNet-B0            & 89.5\%          & 97.9\%          & 5.3M  & 17.2 MB  & 11.6 & 19.2 & Classification-native CNN            \\
-YOLOv26n-cls (PyTorch)     & 88.1\%          & 98.4\%          & 1.74M & 3.6 MB   & 6.3  & 7.1  & Production source                    \\
-YOLOv26n-cls (TFLite f16)  & 88.1\%          & 98.4\%          & 1.74M & 3.6 MB   & --   & 4.8  & \textbf{Deployed model}              \\
-YOLOv8n-cls                & 86.8\%          & 97.9\%          & 2.7M  & 3.4 MB   & 4.6  & 6.3  & Original baseline                    \\
-TaxonomicYOLO26            & 79.7\%          & --              & $\sim$2M & 25.0 MB & --   & --  & Dual-head genus + species            \\
-\hline
-\multicolumn{8}{l}{\textit{Scoped but not trained:}~ViT-S/16, YOLOv11n-cls.} \\
-\hline
-\end{tabular}
-\end{table*}
- 
-\textit{Why three architectures were selected for systematic
-benchmarking.} The three benchmarked models cover three distinct
-representation paradigms: (i)~YOLOv26n-cls --- detection-derived
-classifier, ImageNet-1k pretrained, optimised for edge inference;
-(ii)~ConvNeXt-Tiny --- modern CNN with ViT-style design choices,
-ImageNet-1k pretrained, larger parameter budget; (iii)~DINOv2-Small ---
-self-supervised ViT pretrained on 142M images without labels, intended
-to test whether self-supervised features generalise to fine-grained
-mycological classification. EfficientNet-B0 and the YOLO baselines were
-trained to set context but not subjected to the full multimodal
-ablation; TaxonomicYOLO26 was an exploratory dual-head experiment
-(predicting genus and species from a shared backbone) which
-underperformed the single-head YOLOv26n by 8.4\,pp Top-1 and was
-abandoned. ViT-S/16 was scoped but not trained to convergence within
-project budget; YOLOv11n-cls was bypassed in favour of the newer
-YOLOv26n.
- 
-\textit{Architecture-specific training notes.} ConvNeXt-Tiny full
-fine-tuning of all 28.6\,M parameters required approximately
-7,278\,seconds per epoch on the RTX~4070, making 50-epoch training
-computationally infeasible. A two-phase Parameter-Efficient Fine-Tuning
-(PEFT) strategy reduced per-epoch time to $\sim$776\,seconds (a
-$9.4\times$ speedup) by freezing the stem and backbone stages 1--3
-during Phase~1 (epochs 1--10), then unfreezing the backbone with a
-differential learning rate (4e-05 backbone vs 4e-04 head) for Phase~2
-(epochs 11--50). DINOv2-Small used differential learning rates from the
-start (1e-05 backbone, 1e-04 head, a $10\times$ ratio) to preserve its
-self-supervised representations during fine-tuning, with a 5-epoch
-warmup followed by cosine decay; training terminated at epoch~49.
-YOLOv26n-cls used full fine-tuning across all parameters for 50 epochs
-under standard cosine LR scheduling and was subsequently exported to
-TFLite float16 via the XNNPACK delegate, reducing the Docker image from
-$\sim$1.5\,GB to $\sim$200\,MB while preserving prediction outputs.
- 
-\textit{Hardware caveat.} DINOv2-Small was trained on an
-NVIDIA~A100-SXM4-40GB via Google Colab; YOLOv26n-cls and ConvNeXt-Tiny
-were trained locally on an NVIDIA GeForce RTX~4070. Training-time
-comparisons should therefore be interpreted with caution, but accuracy
-metrics are directly comparable as all models were evaluated on the
-same held-out test split.
- 
-\textit{TaxonomicYOLO26 — abandoned dual-head experiment.} The
-TaxonomicYOLO26 variant added a parallel genus head to the YOLOv26n
-backbone, with the intention that hierarchical supervision (predicting
-both genus and species) would improve fine-grained discrimination on
-visually similar within-genus species (e.g.~\textit{Amanita phalloides}
-vs \textit{Amanita citrina}). In practice, the shared backbone splitting
-its capacity between genus and species objectives reduced single-head
-species accuracy by 8.4\,pp (79.7\% vs 88.1\% for vanilla YOLOv26n). The
-experiment was discontinued; future work could revisit dual-head
-training with a per-task adapter rather than a fully shared backbone.
- 
- 
 \section{Excluded LLM Configurations}\label{app:ablation}
-
 In addition to Gemini~3~Flash (the deployed audit model), two smaller
 local LLMs were initially tested but excluded from the final ablation
 results due to fundamental reasoning failures at their parameter scales.
@@ -1093,6 +1149,18 @@ basis.
 
 
 
+
+
+
+
+ 
+ 
+
+
+
+
+\section{Example Structured Output / App Output
+Supports Results Section D: comparison of unimodal and multimodal outputs.}
 
 % use section* for acknowledgment
 \section*{Acknowledgment}
