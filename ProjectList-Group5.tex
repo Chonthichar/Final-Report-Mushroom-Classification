@@ -154,6 +154,7 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\usepackage{amsmath}
 
 
 % *** MATH PACKAGES ***
@@ -407,16 +408,15 @@ Chonthichar Soythong\IEEEauthorrefmark{3}~\IEEEmembership{}}
 % in the abstract or keywords.
 \IEEEtitleabstractindextext{%
 \begin{abstract}
-Traditional automated mushroom identification is a unimodal image
-classification task, where most systems predict only species labels
-and confidence scores from a single image. Such single-modality
-approaches lack ecological grounding, language-based reasoning, and interpretable outputs, limiting their usefullness in real-world contexts where
+Traditionaly, automated mushroom identification has been a unimodal classification task, where most systems predict only species labels
+and confidence scores from a single image. This single-modality
+approaches lacks ecological grounding, language-based reasoning, and interpretable outputs, limiting their usefullness in real-world context, where
 misidentification can result in severe health consequences. In this
 study, we propose a unified multimodal mushroom identification
 framework based on a four-stage pipeline: (1) computer vision
 classification, (2) ecological context retrieval, (3) Large Language
 Model (LLM) audit reasoning, and (4) interpretable output generation, implemented as a complete end-to-end deployable system.
-Eight model architectures were evaluated across 169 species and approximately
+six model architectures were evaluated int this study across 169 species and approximately
 689,000 images. YOLOv26n-cls was selected as the deployment model,
 achieving 88.1\% Top-1 and 98.4\% Top-5 accuracy with 4.8\,ms CPU
 inference via TFLite export. An ablation study showed that standalone vision models missed between 70.0\% and 85.7\% of dangerous cases, however adding the Gemini LLM assessment layer improved recall for detecting toxic and dangerous species from
@@ -484,7 +484,7 @@ and code is available on \href{https://github.com/QuasimodoCodes/Mushrooms/tree/
 
 \IEEEPARstart{M}{ushrooms} represent a growing area of scientific and commercial interest, with applications ranging from the food industry to biopharmaceutical development\cite{mayirnao2025}. However, distinguishing between mushroom species remains difficult due to the fine-grained nature of their physical features between certain species\cite{sevindik2025}. 
 
-In real-world contexts, certain poisonous or edible mushroom species can appear nearly identical to the untrained eye, so that misidentifying them can therefore lead to fatal consequences. The challenge is further compounded by the fact that mushroom appearance changes with age, weather exposure, and geographic conditions, which is reducing the reliability of identification based solely on visual inspection\cite{picek2025fungitastic}.
+In the real-world, certain poisonous or edible mushroom species can appear nearly identical to the untrained eye, so that misidentifying them can therefore lead to fatal consequences. The challenge is further compounded by the fact that mushroom appearance changes with age, weather exposure, and geographic conditions, which is reducing the reliability of identification based solely on visual inspection\cite{picek2025fungitastic}.
 
 Existing research has explored a range of architectures, including convolutional neural networks, residual networks, transformers and object detection models, demonstrating promising prediction under controlled experimental settings\cite{kuznetsov2026}. Despite the growing availability of deep leaning mushroom identification tools, most existing research papers recognized mushrooms as a standard image classification task, predicting only species labels and a numerical confidence score from a single photograph.
  
@@ -613,7 +613,7 @@ All models were trained and evaluated on a dataset of 169 mushroom species compr
 The Danish Fungi dataset was introduced as a fine-grained fungal image-recognition benchmark with expert-verified labels and rich observation metadata, including geographic, habitat, and substrate information\cite{picek2022danishfungi}\cite{picek2025fungitastic}. In this study, the DF24-Mini benchmark is used for external validation.
 
 \subsubsection{\textbf{Ecological Database}}\label{sec:ecological-db}
-To support multimodal pipeline, ecological metadata was compiled into a structured JSON database containing 12 fields per species, including toxicity classification, habitat, season, geographic region, morphological descriptions, known lookalike species, and foraging guidance. These records were compiled primarily from multiple open-source Wikipedia species articles and the iNaturalist open-access taxonomy database, which were used to verify species names and ecological data\cite{wikipedia_mushroom}\cite{inaturalist_taxa}. 
+To support multimodal pipeline, ecological metadata was compiled into a structured JSON database containing 12 fields per species, including toxicity classification, habitat, season, geographic region, morphological descriptions, known lookalike species, and foraging guidance. The database examples are provided in Appendix ~\ref{app:eco-schema}. These records were compiled primarily from multiple open-source Wikipedia species articles and the iNaturalist open-access taxonomy database, which were used to verify species names and ecological data\cite{wikipedia_mushroom}\cite{inaturalist_taxa}. 
 
 It is acknowledged that these records have not been independently verified against primary mycological sources and should therefore be used as a prototype knowledge base only. 
 
@@ -633,7 +633,7 @@ Table~\ref{tab:full-leaderboard}.
 
 
 \subsection{\textbf{Internal Experimental Configuration}}
-All three benchmarked models were initialized from pretrained weights and fine tuned on 169 species using consistent evaluation protocols regardless of training hardware with input resolution of 224x224 and maximum of 50 epochs with early stopping (patience 10) and were trained locally on an NVIDIA GeForce RTX 4070. 
+All three benchmarked models were initialized from pretrained weights and fine tuned on 169 species using consistent evaluation protocols regardless of training hardware with input resolution of 224x224 and maximum of 50 epochs with early stopping (patience 10) and were trained locally on an NVIDIA GeForce RTX Graphic cards. 
 
 Notably, YOLOv26n-cls was fully fine-tuned using SGD with cosine learning rate scheduling, and subsequently exported to TFLite float16. 
 
@@ -665,7 +665,7 @@ The evaluation was performed on test set of 300 images, consisting 203 dangerous
 
 
 
-\subsection{\textbf{Evaluation metrics}} 
+\subsection{Evaluation metrics} 
 \subsubsection{Species Classification:} The primary evaluation metrics were Top-1 accuracy  measures whether the highest-confidence predicted class matches the true label, Top-5 accuracy measures whether the true label appears among the five highest-confidence predictions: 
 
 \begin{equation}
@@ -677,11 +677,11 @@ The evaluation was performed on test set of 300 images, consisting 203 dangerous
 Additional metrics include parameter count, model size, and median CPU inference latency \cite{picek2022danishfungi,picek2025fungitastic}.
 
 
-\subsubsection{External Benchmarking} For external validation, YOLOv26n-cls was evaluated on the DF24-Mini benchmark using the same metrics reported in the published baseline: Top-1 and  Top-3 accuracy applies 
+\subsubsection{\textbf{External Benchmarking}} For external validation, YOLOv26n-cls was evaluated on the DF24-Mini benchmark using the same metrics reported in the published baseline: Top-1 and  Top-3 accuracy applies 
 Equation~(1) with $k=3$, enabling direct comparison with published baselines. This allows direct comparison with prior models evaluated on the same benchmark dataset, following the evaluation protocol of Picek et al.~\cite{picek2022danishfungi}.
 
 
-\subsubsection{Ablation Study}: Performance was measured using three metrics: (1) Safety Recall (percentage of dangerous mushrooms correctly flagged):
+\subsubsection{\textbf{Ablation Study}} Performance was measured using three metrics: (1) Safety Recall (percentage of dangerous mushrooms correctly flagged):
 
 \begin{equation}
 \text{Safety Recall} = \frac{TP}{TP + FN}
@@ -730,61 +730,78 @@ The mushroom framework pipeline is implemented as two containerized microservice
 
 The final end-to-end pipeline produces a structured identification report delivered to the user via the Gradio web interface. The report is designed to provide non-technical users   containing the predicted species, confidence score, toxicity class, ecological context, LLM field assessment, risk level (CRITICAL/HIGH/MODERATE/LOW), and a plain-language recommendation. 
 
-Fig.~\ref{fig:pipeline-full} illustrates the complete 
-pipeline from input image to structured output, including 
-an example report for \textit{Amanita phalloides} as 
-rendered in the Gradio interface.
-
-% Mushroom input image at top
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}[
-    node distance=0.8cm,
-    box/.style={rectangle, draw, rounded corners,
-    minimum width=3.5cm, minimum height=0.8cm,
-    text centered, font=\small},
-    arrow/.style={->, thick}
+    node distance=0.5cm,
+    box/.style={
+        rectangle, draw=gray!60, rounded corners=4pt,
+        minimum width=6cm, 
+        text width=5.8cm,
+        minimum height=1cm,
+        text centered, font=\small, 
+        inner sep=6pt, line width=0.5pt},
+    arrow/.style={->, thick, gray!70},
+    label/.style={font=\footnotesize, text=gray!80}
 ]
 
-% Mushroom image at top as a node
-\node (inputimg) 
-    {\includegraphics[width=0.2\columnwidth]{Amanita_phalloides_1.JPG}};
-\node[below=0.1cm of inputimg, font=\small] (inputlabel) 
-    {Input: \textit{Amanita phalloides}};
+% Input image
+\node (inputimg) {
+    \includegraphics[width=0.3\columnwidth]
+    {Amanita_phalloides_1.JPG}};
+\node[below=0.05cm of inputimg, 
+      font=\small\itshape] (inputlabel) 
+    {Amanita phalloides};
 
-% Pipeline stages
-\node[box, fill=blue!15, below=0.4cm of inputlabel] (s1) 
-    {Stage 1: Vision API\\\footnotesize YOLOv26n TFLite};
-\node[box, fill=green!15, below=of s1] (s2) 
-    {Stage 2: Ecological Retrieval\\
+% Stage 1
+\node[box, fill=blue!10, 
+      below=0.3cm of inputlabel] (s1){
+    \textbf{Stage 1 Vision API}\\
+    \footnotesize YOLOv26n-cls $\cdot$ TFLite float16};
+
+% Stage 2
+\node[box, fill=green!10, 
+      below=0.3cm of s1] (s2){
+    \textbf{Stage 2 Ecological Retrieval}\\
     \footnotesize mushroom\_context.json};
-\node[box, fill=orange!15, below=of s2] (s3) 
-    {Stage 3: LLM Audit\\
+
+% Stage 3
+\node[box, fill=orange!10, 
+      below=0.3cm of s2] (s3){
+    \textbf{Stage 3 LLM Audit}\\
     \footnotesize Gemini Flash Lite};
-\node[box, fill=red!15, below=of s3] (s4) 
-    {Stage 4: Risk Classifier\\
+
+% Stage 4
+\node[box, fill=red!10, 
+      below=0.3cm of s3] (s4){
+    \textbf{Stage 4 Risk Classifier}\\
     \footnotesize Rule-based Python};
 
-% App screenshot at bottom as a node
-\node[below=0.4cm of s4] (outputimg) 
-    {\includegraphics[width=1\columnwidth]{Gradio_UI.png}};
-\node[below=0.1cm of outputimg, font=\small] (outputlabel)
-    {Output: Structured report in Gradio interface};
+% Output screenshot
+\node[below=0.3cm of s4] (outputimg){
+    \includegraphics[width=0.9\columnwidth]
+    {Gradio_UI.png}};
+\node[below=0.05cm of outputimg,
+      font=\small\itshape] (outputlabel)
+    {Structured report in Gradio interface};
 
-% Arrows
+% Arrows with labels
 \draw[arrow] (inputlabel) -- 
-    node[right]{\footnotesize image} (s1);
+    node[label, right]{image} (s1);
 \draw[arrow] (s1) -- 
-    node[right]{\footnotesize species and confidence} (s2);
+    node[label, right]{species + confidence} (s2);
 \draw[arrow] (s2) -- 
-    node[right]{\footnotesize 12-field record} (s3);
+    node[label, right]{12-field record} (s3);
 \draw[arrow] (s3) -- 
-    node[right]{\footnotesize verdict and reasoning} (s4);
+    node[label, right]{verdict + reasoning} (s4);
 \draw[arrow] (s4) -- 
-    node[right]{\footnotesize risk level} (outputimg);
+    node[label, right]{risk level} (outputimg);
 
 \end{tikzpicture}
-\caption{End-to-end pipeline for \textit{Amanita phalloides}}
+\caption{End-to-end pipeline for 
+\textit{Amanita phalloides}: input image (top), 
+four-stage processing (middle), and structured 
+Gradio output (bottom).}
 \label{fig:pipeline-full}
 \end{figure}
 
@@ -798,24 +815,82 @@ This section presents the experimental results in relation to the research quest
 
 \subsection{\textbf{Internal Baseline Vision Model Benchmarking}}\label{subsec:baseline}
  
-Table~\ref{tab:main-leaderboard} compares the three selected vision models on the held-out 10\% test split of the 169 species mushroom dataset, the purpose was to evaluate which model was most suitable for deployment. 
+Table~\ref{tab:main-leaderboard} compares the three selected vision models on the held-out 10\% test split of the 169 species mushroom dataset, and Fig. ~\ref{fig:validation-accuracy-trends} shows the Top-1 and Top-5 accuracy trends across training epochs. The purpose of this experiment was to evaluate which model provided the best balance between classification performance and deployment efficiently. 
 
 DINOv2-Small achieved the highest Top-1 accuracy at 92.4\%, indicating that self-supervised vision transformer features were effective for fine gain mushroom classification. ConvNeXt-Tiny also performed strongly with Top-1 accuracy at 91.1\%. However these improvement required substantially larger deployment resources. Dinov2-Small used 22.0M parameters and an 85 MB model file and ConvNeXt-Tiny contained 28.6 Parameters and produced a 110 MB model file.
 
-YOLOv26n-cls achieved a lower Top-1 accuracy of 88.1\%, but reach 98.4\% Top-5 accuracy matching the strongest Top-5 performance among the benchmarked models.
+YOLOv26n-cls achieved a lower Top-1 accuracy of 88.1\%, but reach 98.4\% Top-5 accuracy matching the strongest Top-5 performance among the benchmarked models. 
 
-Although YOLOv26n-cls Top-1 accuracy was lower than  DINOv2-Small and ConvNeXt-Tiny, its Top-5 accuracy were nearly identical to the larger models. This means that YOLOv26n-cls often included the correct species among its top predictions, even when the first prediction was not always correct. In addition, after converted to TFLite float16, YOLOv26n-cls was also much smaller and faster, with only 1.74M parameters and produced a 3.6 MB model file and CPU inference time at 4.8 ms.
+Although YOLOv26n-cls Top-1 accuracy was lower than  DINOv2-Small and ConvNeXt-Tiny, its Top-5 accuracy were nearly identical to the larger models. This means that YOLOv26n-cls often included the correct species among its top predictions, even when the first prediction was not always correct. 
+
+In addition, after conversion to TFLite float16, YOLOv26n-cls was also much smaller and faster than the large models, with only 1.74M parameters and produced a 3.6 MB model file and CPU inference time at 4.8 ms. Fig.~\ref{fig:model-comparison} provides an illustrative single image comparison using an Amanta phalloidas test image. All three models predict the correct 
+species while YOLOv26n-cls achieved the fastest 
+inference time at 3.8ms and fewest parameters 1.74M in this example. However, this figured is used as a qulaitative illustration; the deployment decision is primary supported bu the full benchmark results in Table~\ref{tab:main-leaderboard}.
 
 Therefore, YOLOv26n-cls was selected as the deployment model because it provided the best trade-off between classification performance, model size, inference speed, and deployment practicality. 
 
-The full eight model benchmark, including
-EfficientNet-B0, YOLOv8n-cls, and the TaxonomicYOLO26 dual-head experiment,is reported in Appendix~\ref{app:full-bench}, Table~\ref{tab:full-leaderboard}.
+The full six model benchmark, including
+EfficientNet-B0, YOLOv8n-cls, YOLOv11n-cls,is reported in Appendix~\ref{app:full-bench}, Table~\ref{tab:full-leaderboard}.
 
 
 \begin{figure}[h]
-    \centering
-    \includegraphics[width=1\linewidth]{Dino.png}
-    \caption{Mushroom Classification of all three main models}
+\centering
+\begin{tikzpicture}
+    \node[anchor=south west, inner sep=0] (image) at (0,0)
+        {\includegraphics[width=0.55\columnwidth]
+        {Amanita_phalloides_1.JPG}};
+    
+    \begin{scope}[x={(image.south east)},
+                  y={(image.north west)}]
+        
+        % ConvNeXt label — grey
+        \node[fill=gray!80!black, fill opacity=0.85, 
+              text opacity=1, text=white, 
+              font=\footnotesize\bfseries,
+              rounded corners=3pt, 
+              inner sep=4pt,
+              anchor=north west] 
+              at (0.02, 0.98) 
+              {ConvNeXt-Tiny \quad 71.4\% \quad 
+              6.6ms \quad 27.95M};
+        
+        % DINOv2 label — blue
+        \node[fill=blue!60!black, fill opacity=0.85,
+              text opacity=1, text=white,
+              font=\footnotesize\bfseries,
+              rounded corners=3pt, 
+              inner sep=4pt,
+              anchor=north west]
+              at (0.02, 0.91)
+              {DINOv2-Small \quad 89.1\% \quad 
+              7.8ms \quad 22.12M};
+        
+        % YOLO label — green
+        \node[fill=green!50!black, fill opacity=0.85,
+              text opacity=1, text=white,
+              font=\footnotesize\bfseries,
+              rounded corners=3pt, 
+              inner sep=4pt,
+              anchor=north west]
+              at (0.02, 0.84)
+              {YOLOv26n-cls \quad 95.5\% \quad 
+              3.8ms \quad 1.74M \checkmark};
+
+        % Species label at bottom
+        \node[fill=black, fill opacity=0.75,
+              text opacity=1, text=white,
+              font=\footnotesize\itshape,
+              rounded corners=3pt, 
+              inner sep=4pt,
+              anchor=south west]
+              at (0.02, 0.02)
+              {Amanita phalloides --- Ground Truth};
+              
+    \end{scope}
+\end{tikzpicture}
+\caption{Confidence scores, CPU latency, and parameter count overlaid on the same 
+\textit{Amanita phalloides} test image.}
+\label{fig:model-comparison}  % ← must be HERE
 \end{figure}
 
 
@@ -997,18 +1072,26 @@ Overall, this comparison shows that the proposed pipeline improves interpreabili
 % ------ Discussion ------
 \section{\textbf{Discussion}}
 
-These results shows that neither vision classification nor Gemini isolated was sufficient for reliable edible and toxic assessment. The vision identification model missed classify between 70.0\% and 85.7\% of dangerous cases. In contrast, Gemini detects most dangerous cases but incorrectly flagged 70.7\% of safe cases as dangerous. DINOv2-Small and ConvNeXt-Tiny achieved higher Top-1 accuracy than YOLOv26n-cls in the internal benchmarking but they performed worse in the ablation setting. 
+These results shows that neither image classification alone nor standard Gemini was sufficient for reliable edible and toxic assessment. The image-only identification model missed classify between 70.0\% and 85.7\% of dangerous cases. In contrast, Gemini detects most dangerous cases but incorrectly flagged 70.7\% of safe cases as dangerous. DINOv2-Small and ConvNeXt-Tiny achieved higher Top-1 accuracy than YOLOv26n-cls in the internal benchmarking but they performed worse in the ablation setting. 
 
 A key finding is that higher species classification accuracy did not lead to better toxic-risk detection, because the vision models were trained to classify species, not to directly reason about edibility or toxicity. In the vision-only setting, the 70\% threshold acted only as an uncertainty warning, not as true toxicity reasoning. This highlights the importance of adding ecological context and an LLM audit layer. This indicate that a single component system is not suitable at detecting toxic risk and too conservative for practical use. 
 
-The multimodal provided the best balance, with F1 score between 80.0\% and 81.9\%. When Gemini was added, all three multimodal configurations achieved very similar F1 scores,  between 80.0\% to 81.9\%  This findings support the main decision to combine vision classification with ecological metadata and an Gemini LLM audit layer.
+The multimodal provided the best balance, with F1 score between 80.0\% and 81.9\%. When Gemini was added, all three multimodal configurations achieved very similar F1 scores, between 80.0\% to 81.9\%  This findings support the main decision to combine vision classification with ecological metadata and an Gemini LLM audit layer.
 
 
-The results from the external DF24-Mini benchmark further support the deployment selection.  YOLOv26n-cls did not achieve the highest accuracy overall, but it remained competitive against published baselines that requiring far fewer parameters than a large ViT and SE-ResNeXt models. In addition, YOLOv26n-cls also required only 15.3 ms per image in the ablation harness, compared with 30.1 ms for ConvNeXt-Tiny and 38.7 ms for DINOv2-Small. These results supports the conclusion that YOLOv26n-cls provides the best practical trade-off between classification performance, toxic-risk detection, inference speed, model size and deployment efficiently. 
+The results from the external DF24-Mini benchmark further support the deployment selection. YOLOv26n-cls did not achieve the highest accuracy overall, but it remained competitive against published baselines that requiring far fewer parameters than a large ViT and SE-ResNeXt models. In addition, YOLOv26n-cls also required only 15.3 ms per image in the ablation harness, compared with 30.1 ms for ConvNeXt-Tiny and 38.7 ms for DINOv2-Small. 
 
-The structure output comparison addresses RQ3 by further analysis that the proposed pipeline provides more useful information than a standard vision classifier. A vision model only returns a species label and confidence score which is provides no basic knowledge to evaluate whether to trust the prediction or what action should be taken. In contrast, the propose multimodal model generates a 13 field report that includes toxicity class, ecological context, risk level, LLM reasoning, and user guidance. This design support the main aim of the study that to build a mushroom identification system that is more interpretable and more useful.
+These results supports the deployment selection of YOLOv26n-cls, since the prior efficient deep learning research emphasizes that deployed vision models should be evaluated not only by accurcay, but also by latency, model size, and computational effiiceny.  Therefore,  YOLOv26n-cls was selected becuase its provides the best practical trade-off between classification performance inference speed, model size, and deployment feasibility \cite{howard2017mobilenets}. 
+
+The structure output comparison addresses RQ3 by further analysis that the proposed pipeline provides more useful information than a standard vision classifier. A vision model only returns a species label and confidence score which is provides no basic knowledge to evaluate whether to trust the prediction or what action should be taken. In contrast, the propose multimodal model generates a 12 field report that includes toxicity class, ecological context, risk level, LLM reasoning, and user guidance. This design support the main aim of the study that to build a mushroom identification system that is more interpretable and more useful.
  
-However, we aware that our research may have several limitations due to the time constraint of the project. First, the ecological database was developed as a prototype knowledge base, compile from open-source resources, and the database was not validated by expert mycologist. Second, the system was not evaluated with real users, so the structure output has not yet been tested in real word contexts. Therefore, the system should be understood as a decision support prototype rather than a replacement for expert mushroom identification. Future work should include the large scale of validation, expert review of the ecological database and testing on the user in order to evaluate whether the structured output is useful and understandable in real world contexts.
+\textbf{Limitations:} However, we aware that our research may have several limitations due to the time constraint of the project and the safety critical. First, the ecological database was developed as a prototype knowledge base, compile from open-source resources, and the database was not validated by expert mycologist. 
+
+Second, the system was not evaluated with real users, so the structure output has not yet been tested in real word contexts. Therefore, the system should be understood as a decision support prototype rather than a replacement for expert mushroom identification. 
+
+\textbf{Future Work:} Future work should include the large scale of validation, expert review of the ecological database and testing on the user in order to evaluate whether the structured output is useful and understandable in real world contexts.
+
+In additin, the researahc can pocus more of the experiment that centerd around the trad off between latency and accurcay in real word production becuase not some fields for exaple in medical data reqires more accyracy than latency and filed like financal that requires fast than accurcay. 
 
 
 
@@ -1290,8 +1373,10 @@ basis.
 
 In this project, everyone produce equally to the task:
 
-Chonthichar:
+Chonthichar:100%
+
 Victor:
+
 Herman: 
 
 
